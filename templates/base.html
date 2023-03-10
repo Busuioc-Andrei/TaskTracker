@@ -20,22 +20,23 @@
                     <a class="navbar-brand" href="{% url 'index'%}">Task Tracker</a>
                 </div>
                 <ul class="nav navbar-nav">
-                    <li sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" href="{% url 'login'%}">Log in</a>
-                    </li>
-                    <li sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" href="{% url 'signup'%}">Sign up</a>
-                    </li>
-                    <li sec:authorize="isAuthenticated()">
-                        <form id="logoutForm" method="POST" th:action="@{/logout}">
-                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                        </form>
-                        <a class="nav-link" onclick="document.forms['logoutForm'].submit()">Log out</a>
-                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout'%}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a class="nav-link" href="{% url 'login'%}">Log in</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'signup'%}">Sign up</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </nav>
         <div class="container mt-4">
+            {% include 'messages.html' %}
             {% block content %}
             {% endblock %}
         </div>

@@ -1,15 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 
-# from test_app.forms import TaskForm
 from test_app.models import Task
 
 
-def index(request):
-    return HttpResponse("Hello, world.")
+class IndexPageView(TemplateView):
+    template_name = "index.html"
 
 
 class TaskListView(ListView):
