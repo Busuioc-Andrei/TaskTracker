@@ -17,14 +17,14 @@
         <nav class="navbar navbar-expand-md bg-dark navbar-dark">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" th:href="@{/}">Task Tracker</a>
+                    <a class="navbar-brand" href="{% url 'index'%}">Task Tracker</a>
                 </div>
                 <ul class="nav navbar-nav">
                     <li sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" th:href="@{/login}">Log in</a>
+                        <a class="nav-link" href="{% url 'login'%}">Log in</a>
                     </li>
                     <li sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" th:href="@{/signup}">Sign up</a>
+                        <a class="nav-link" href="{% url 'signup'%}">Sign up</a>
                     </li>
                     <li sec:authorize="isAuthenticated()">
                         <form id="logoutForm" method="POST" th:action="@{/logout}">
