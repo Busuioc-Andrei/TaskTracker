@@ -11,7 +11,7 @@ from auth.forms import NewUserForm
 class SignupFormView(FormView):
     template_name = 'auth/signup.html'
     form_class = NewUserForm
-    success_url = '/test_app/'
+    success_url = '/'
 
     def form_valid(self, form):
         user = form.save()
@@ -23,7 +23,7 @@ class SignupFormView(FormView):
 class LoginFormView(FormView):
     template_name = 'auth/login.html'
     form_class = AuthenticationForm
-    success_url = '/test_app/'
+    success_url = '/'
 
     def form_valid(self, form):
         username = form.cleaned_data.get('username')

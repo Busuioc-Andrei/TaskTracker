@@ -1,16 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{#    <h2>Tasks</h2>#}
-{#    <table>#}
-{#        <thead></thead>#}
-{#        {% for task in object_list %}#}
-{#            <li>#}
-{#                <a href="{{task.get_absolute_url}}"> {{ task.name }} </a>#}
-{#            </li>#}
-{#        {% endfor %}#}
-{#    </table>#}
-
     <div>
         {% if not object_list %}
             <h2>No tasks yet!</h2>
@@ -38,6 +28,7 @@
                                 <td> {{task.modified_at}} </td>
                                 <td>
                                     <a class="btn btn-primary mr-4" href="{% url 'task-update' task.id%}">Edit</a>
+                                    <a class="btn btn-info" href="{{task.get_absolute_url}}">Details</a>
                                     <a class="btn btn-danger" href="{% url 'task-delete' task.id%}">Delete</a>
                                 </td>
                             </tr>
