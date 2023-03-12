@@ -2,8 +2,10 @@
 
 {% block content %}
     {% include 'back_button.html' %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
     <form method="post">{% csrf_token %}
-        {{ form.as_p }}
+        {{ form|crispy }}
         <input type="submit" value="Save" class="btn btn-primary">
     </form>
 {% endblock %}

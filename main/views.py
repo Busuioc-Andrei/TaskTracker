@@ -1,8 +1,10 @@
+from django import forms
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from main.models import Task
+from main.models import Task, Issue
+from main.widgets import XDSoftDateTimePickerInput
 
 
 class IndexPageView(TemplateView):
@@ -10,23 +12,36 @@ class IndexPageView(TemplateView):
 
 
 class TaskListView(ListView):
-    model = Task
+    template_name = 'main/task_list.html'
+    model = Issue
 
 
 class TaskDetailView(DetailView):
-    model = Task
+    template_name = 'main/task_detail.html'
+    model = Issue
 
 
 class TaskCreateView(CreateView):
-    model = Task
-    fields = ['name', 'description']
+    template_name = 'main/task_form.html'
+    model = Issue
+    fields = ['name', 'description', 'issue_type', 'start_date']
+
+    def get_form(self, form_class=None):
+        form = super(TaskCreateView, self).get_form(form_class)
+        form.fields['start_date'] = forms.DateTimeField(
+            input_formats=['%d/%m/%Y %H:%M'],
+            widget=XDSoftDateTimePickerInput()
+        )
+        return form
 
 
 class TaskUpdateView(UpdateView):
-    model = Task
+    template_name = 'main/task_form.html'
+    model = Issue
     fields = ['name', 'description']
 
 
 class TaskDeleteView(DeleteView):
-    model = Task
+    template_name = 'main/task_confirm_delete.html'
+    model = Issue
     success_url = reverse_lazy('task-list')
