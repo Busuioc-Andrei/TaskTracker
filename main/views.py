@@ -1,14 +1,24 @@
 from django import forms
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from main.models import Task, Issue
+from main.models import Issue
 from main.widgets import XDSoftDateTimePickerInput
 
 
 class IndexPageView(TemplateView):
     template_name = "index.html"
+
+
+def echo(request):
+    print(request.body)
+    return HttpResponse(status=201)
+
+
+class BoardPageView(TemplateView):
+    template_name = "main/board.html"
 
 
 class TaskListView(ListView):
