@@ -1,12 +1,13 @@
 from django.urls import path
 
 from .views import TaskListView, TaskCreateView, TaskUpdateView, TaskDeleteView, TaskDetailView, IndexPageView, \
-    BoardPageView, echo, ProjectCreateView
+    BoardPageView, echo, ProjectCreateView, ProjectDetailView
 
 urlpatterns = [
     path('', IndexPageView.as_view(), name='index'),
     path('echo/', echo, name='echo'),
     path('board/', BoardPageView.as_view(), name='board'),
+    path('project/<uuid:pk>/', ProjectDetailView.as_view(), name='project-detail'),
     path('project/add/', ProjectCreateView.as_view(), name='project-add'),
     path('tasks/', TaskListView.as_view(), name='task-list'),
     path('task/<uuid:pk>/', TaskDetailView.as_view(), name='task-detail'),

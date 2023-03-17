@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include 'back_button.html' %}
+    <h4>{{ model_name }}</h4>
+    {% for key, value in data.items %}
+        <p>{{ key|capfirst }}: {{ value|default_if_none:'' }}</p>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include 'back_button.html' %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    <h4>Update {{ model_name }}</h4>
+    <form method="post">{% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Save" class="btn btn-primary">
+    </form>
+{% endblock %}

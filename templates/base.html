@@ -37,15 +37,19 @@
                                     Projects
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Action</a></li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    {% for project in project_list %}
+                                        <li><a class="dropdown-item" href="#">{{ project.name }}</a></li>
+                                    {% endfor %}
+                                    {% if project_list %}
+                                        <li><hr class="dropdown-divider"></li>
+                                    {% endif %}
                                     <li>
                                         <a class="dropdown-item" href="{% url 'project-add'%}">
-                                            <i class="bi bi-plus-circle"></i> Add new project
+                                            <i class="bi bi-plus-circle"></i>
+                                            Add new project
                                         </a>
                                     </li>
                                 </ul>
-{#                                <a class="nav-link" href="{% url 'index'%}">Projects</a>#}
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'board'%}">Boards</a>
