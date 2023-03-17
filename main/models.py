@@ -10,10 +10,10 @@ class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=300)
     description = models.CharField(max_length=5000)
-    created_at = models.DateTimeField(null=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_created', null=True)
-    modified_at = models.DateTimeField(null=True)
-    modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_modified', null=True)
+    created_at = models.DateTimeField(null=True, editable=False)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_created', null=True, editable=False)
+    modified_at = models.DateTimeField(null=True, editable=False)
+    modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_modified', null=True, editable=False)
 
     class Meta:
         abstract = True
@@ -40,7 +40,7 @@ class Column(BaseModel):
 
 class Issue(BaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
-    column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True)
+    column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True, editable=False)
     parent_issue = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
