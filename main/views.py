@@ -1,6 +1,5 @@
 from django import forms
 from django.db.models import DateTimeField
-from django.forms import model_to_dict, ModelForm
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, TemplateView
@@ -16,9 +15,19 @@ def add_datetime_widget(self, form):  # datetime widget for all datetime fields
         if date_field in form.fields:
             form.fields[date_field] = forms.DateTimeField(
                 input_formats=['%d/%m/%Y %H:%M'],
-                widget=XDSoftDateTimePickerInput()
+                widget=XDSoftDateTimePickerInput(),
+                required=form.fields[date_field].required
             )
     return form
+
+
+class CustomListView(ListView):
+    template_name = 'main/generic_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['model_name'] = self.model.__name__
+        return context
 
 
 class CustomCreateView(CreateView):
@@ -34,6 +43,11 @@ class CustomCreateView(CreateView):
         form = super().get_form(form_class)
         form = add_datetime_widget(self, form)
         return form
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
 
 
 class CustomUpdateView(UpdateView):
@@ -56,10 +70,17 @@ class CustomDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        data = model_to_dict(self.get_object())
+        data = self.get_object().to_dict()
         context['model_name'] = self.model.__name__
         context['data'] = data
         return context
+
+
+class CustomDeleteView(DeleteView):
+    template_name = 'main/generic_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse_lazy(f'{self.model.__name__.lower()}-list')
 
 
 class IndexPageView(TemplateView):
@@ -71,37 +92,6 @@ def echo(request):
     return HttpResponse(status=201)
 
 
-class ProjectCreateView(CustomCreateView):
-    model = Project
-
-
-class ProjectDetailView(CustomDetailView):
-    model = Project
-
-
 class BoardPageView(ListView):
     template_name = "main/board.html"
     model = Issue
-
-
-class TaskListView(ListView):
-    template_name = 'main/task_list.html'
-    model = Issue
-
-
-class TaskDetailView(CustomDetailView):
-    model = Issue
-
-
-class TaskCreateView(CustomCreateView):
-    model = Issue
-
-
-class TaskUpdateView(CustomUpdateView):
-    model = Issue
-
-
-class TaskDeleteView(DeleteView):
-    template_name = 'main/generic_confirm_delete.html'
-    model = Issue
-    success_url = reverse_lazy('task-list')

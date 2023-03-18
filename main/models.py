@@ -1,8 +1,8 @@
 import uuid
+from itertools import chain
 
-from django import forms
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 from django.utils.translation import gettext_lazy as _
 
 
@@ -10,44 +10,52 @@ class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=300)
     description = models.CharField(max_length=5000, blank=True)
-    created_at = models.DateTimeField(null=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_created', null=True, editable=False)
-    modified_at = models.DateTimeField(null=True, editable=False)
+    modified_at = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_modified', null=True, editable=False)
 
     class Meta:
         abstract = True
 
+    def __repr__(self):
+        return str(self.to_dict())
+
+    def __str__(self):
+        return self.name
+
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse(self.__class__.__name__.lower() + '-detail', kwargs={'pk': self.pk})
 
+    def to_dict(self):
+        opts = self._meta
+        data = {}
+        for field in chain(opts.concrete_fields, opts.private_fields):
+            data[field.name] = field.value_from_object(self)
+        for field in opts.many_to_many:
+            data[field.name] = [val.id for val in field.value_from_object(self)]
+        return data
+
 
 class Project(BaseModel):
-    def __str__(self):
-        return self.name
+    pass
 
 
 class Board(BaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.name
-
 
 class Column(BaseModel):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
 
 
 class Issue(BaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
     column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True, editable=False)
     parent_issue = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
-    start_date = models.DateTimeField(null=True)
-    end_date = models.DateTimeField(null=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
 
     class IssueType(models.TextChoices):
         EPIC = 'epic', _('Epic')
@@ -59,13 +67,6 @@ class Issue(BaseModel):
         choices=IssueType.choices,
         default=IssueType.TASK
     )
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        from django.urls import reverse
-        return reverse(self.issue_type + '-detail', kwargs={'pk': self.pk})
 
 
 # class Epic(Issue):
@@ -96,5 +97,4 @@ class Issue(BaseModel):
 
 
 class Comment(BaseModel):
-    def __str__(self):
-        return self.name
+    pass

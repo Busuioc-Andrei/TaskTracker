@@ -1,7 +1,8 @@
-from main.models import Project
+from main.models import Project, Board
 
 
-def projects(request):
+def navbar(request):
     return {
-        "project_list": Project.objects.all()
+        "project_list": Project.objects.all(),
+        "board_list": Board.objects.all()
     }
