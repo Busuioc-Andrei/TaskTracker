@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from main.models import Issue, Project
+from main.models import Issue, Board, Column
 from main.widgets import XDSoftDateTimePickerInput
 
 
@@ -95,3 +95,17 @@ def echo(request):
 class BoardPageView(ListView):
     template_name = "main/board.html"
     model = Issue
+
+
+class BoardCreateView(CustomCreateView):
+    model = Board
+
+    def form_valid(self, form):
+        board = form.save()
+        # add default columns
+        Column.objects.bulk_create([
+            Column(name='To Do', board=board, created_by=self.request.user, modified_by=self.request.user),
+            Column(name='In Progress', board=board, created_by=self.request.user, modified_by=self.request.user),
+            Column(name='Done', board=board, created_by=self.request.user, modified_by=self.request.user),
+        ])
+        return super().form_valid(form)

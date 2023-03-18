@@ -24,7 +24,7 @@
                                 <td>{{object.created_by}}</td>
                                 <td>
                                     <a class="btn btn-primary mr-4" href="{% url model_name|lower|add:'-update' object.id%}">Edit</a>
-                                    <a class="btn btn-info" href="{{object.get_absolute_url}}">Details</a>
+                                    <a class="btn btn-secondary" href="{{object.get_absolute_url}}">Details</a>
                                     <a class="btn btn-danger" href="{% url model_name|lower|add:'-delete' object.id%}">Delete</a>
                                 </td>
                             </tr>

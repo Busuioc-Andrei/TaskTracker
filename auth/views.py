@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import RedirectView
-from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
+from django.views.generic.edit import FormView
 from django.contrib.auth.forms import AuthenticationForm
 
 from auth.forms import NewUserForm
@@ -33,8 +33,6 @@ class LoginFormView(FormView):
             login(self.request, user)
             messages.success(self.request, f"You are now logged in as {username}.")
             return super().form_valid(form)
-        # else: # handled by crispy forms
-        #     messages.error(self.request, "Invalid username or password.")
 
     def form_invalid(self, form):
         messages.error(self.request, "Invalid username or password.")
