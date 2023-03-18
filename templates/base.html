@@ -42,13 +42,20 @@
                                     {% endfor %}
                                     {% if project_list %}
                                         <li><hr class="dropdown-divider"></li>
-                                    {% endif %}
-                                    <li>
+                                        <li>
                                         <a class="dropdown-item" href="{% url 'project-list'%}">
                                             <i class="bi bi-gear"></i>
                                             Edit Projects
                                         </a>
                                     </li>
+                                    {% else %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'project-add'%}">
+                                                <i class="bi bi-plus-circle"></i>
+                                                Add new project
+                                            </a>
+                                        </li>
+                                    {% endif %}
                                 </ul>
                             </li>
                              <li class="nav-item dropdown">
@@ -61,13 +68,21 @@
                                     {% endfor %}
                                     {% if board_list %}
                                         <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                            <a class="dropdown-item" href="{% url 'board-list'%}">
+                                                <i class="bi bi-gear"></i>
+                                                Edit Boards
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'board-add'%}">
+                                                <i class="bi bi-plus-circle"></i>
+                                                Add new board
+                                            </a>
+                                        </li>
                                     {% endif %}
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'board-list'%}">
-                                            <i class="bi bi-gear"></i>
-                                            Edit Boards
-                                        </a>
-                                    </li>
+
                                 </ul>
                             </li>
                             <li class="nav-item">
