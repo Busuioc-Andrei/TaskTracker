@@ -5,21 +5,30 @@ $(function() {
     });
 });
 
+function updateSortable (event, ui) {
+    const csrftoken = Cookies.get('csrftoken');
+    const data = $(this).sortable('serialize', {
+        expression: /(.+)_(.+)/
+    });
+    $.ajax({
+        data: data,
+        headers: {'X-CSRFToken' : csrftoken},
+        type: 'POST',
+        mode: 'same-origin',
+        url: '/echo/'
+    });
+}
+
 $(function() {
-    $(".sortable").sortable({
-        connectWith: ".sortable",
-        update: function (event, ui) {
-            const csrftoken = Cookies.get('csrftoken');
-            const data = $(this).sortable('serialize', {
-                expression: /(.+)_(.+)/
-            });
-            $.ajax({
-                data: data,
-                headers: {'X-CSRFToken' : csrftoken},
-                type: 'POST',
-                mode: 'same-origin',
-                url: '/echo/'
-            });
-        }
+    $(".sortable-col").sortable({
+        connectWith: ".sortable-col",
+        update: updateSortable
+    });
+});
+
+$(function() {
+    $(".sortable-item").sortable({
+        connectWith: ".sortable-item",
+        update: updateSortable
     });
 });

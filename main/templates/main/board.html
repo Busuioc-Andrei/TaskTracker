@@ -1,49 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="row py-3">
-        <div class="col">
-            To do
-        </div>
-        <div class="col">
-            In progress
-        </div>
-        <div class="col">
-            Done
-        </div>
-    </div>
-    <div class="row row-cols-3">
-        <div class="col sortable">
-            {% for issue in object_list %}
-                <div id="col1_{{issue.id}}" class="card mb-3">
-                    <div class="card-header">{{issue.issue_type}}</div>
-                    <div class="card-body">
-                        <p class="card-text">{{issue.name}}</p>
+{#    <div class="row row-cols-5 py-3">#}
+{#        <div class="col bg-secondary">#}
+{#            To do#}
+{#        </div>#}
+{#        <div class="col">#}
+{#            In progress#}
+{#        </div>#}
+{#        <div class="col">#}
+{#            Done#}
+{#        </div>#}
+{#    </div>#}
+    <div class="row row-cols-5 sortable-col">
+        <div class="col min-vh-60 mx-3 bg-secondary">
+            <h6 class="pt-2">To do</h6>
+            <div class="sortable-item">
+                {% for issue in object_list %}
+                    <div id="col1_{{issue.id}}" class="card mb-3">
+                        <div class="card-header">{{issue.issue_type}}</div>
+                        <div class="card-body">
+                            <p class="card-text">{{issue.name}}</p>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
-        <div class="col sortable">
+        <div class="col sortable-item min-vh-60 bg-secondary">
             <div id="col2_02" class="card mb-3">
-                <div class="card-header">Header</div>
+                <div class="card-header">task</div>
                 <div class="card-body">
-                    <h5 class="card-title">Card 2</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                    <p class="card-text">placeholder text</p>
                 </div>
             </div>
         </div>
-        <div class="col sortable">
+        <div class="col sortable-item">
             <div id="col3_03" class="card mb-3">
-                <div class="card-header">Header</div>
+                <div class="card-header">task</div>
                 <div class="card-body">
-                    <h5 class="card-title">Card 3</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                    <p class="card-text">placeholder text</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
