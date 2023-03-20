@@ -1,23 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-{#    <div class="row row-cols-5 py-3">#}
-{#        <div class="col bg-secondary">#}
-{#            To do#}
-{#        </div>#}
-{#        <div class="col">#}
-{#            In progress#}
-{#        </div>#}
-{#        <div class="col">#}
-{#            Done#}
-{#        </div>#}
-{#    </div>#}
     <div class="row row-cols-5 sortable-col">
-        <div class="col min-vh-60 mx-3 bg-secondary">
-            <h6 class="pt-2">To do</h6>
-            <div class="sortable-item">
-                {% for issue in object_list %}
-                    <div id="col1_{{issue.id}}" class="card mb-3">
+        {% for column in object_list %}
+        <div class="col mx-3 bg-secondary">
+            <h5 class="pt-2 mb-0 text-light">{{ column.name }}</h5>
+            <div class="sortable-item min-vh-50">
+                <div class="mt-3"></div>
+                {% for issue in column.issue_set.all %}
+                    <div id="{{ column.id }}_{{issue.id}}" class="card mt-3">
                         <div class="card-header">{{issue.issue_type}}</div>
                         <div class="card-body">
                             <p class="card-text">{{issue.name}}</p>
@@ -25,22 +16,14 @@
                     </div>
                 {% endfor %}
             </div>
-        </div>
-        <div class="col sortable-item min-vh-60 bg-secondary">
-            <div id="col2_02" class="card mb-3">
-                <div class="card-header">task</div>
-                <div class="card-body">
-                    <p class="card-text">placeholder text</p>
-                </div>
+            <div class="position-relative">
+                <p class="text-light">
+                    <i class="bi bi-plus-lg"></i>
+                    Add issue
+                </p>
+                <a href="{% url 'column-issue-add' column.id%}" class="stretched-link"></a>
             </div>
         </div>
-        <div class="col sortable-item">
-            <div id="col3_03" class="card mb-3">
-                <div class="card-header">task</div>
-                <div class="card-body">
-                    <p class="card-text">placeholder text</p>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 {% endblock %}

@@ -43,7 +43,7 @@ class Project(BaseModel):
 
 
 class Board(BaseModel):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, default=Project.objects.first())
 
 
 class Column(BaseModel):
@@ -51,7 +51,7 @@ class Column(BaseModel):
 
 
 class Issue(BaseModel):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, default=Project.objects.first())
     column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True, editable=False)
     parent_issue = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)

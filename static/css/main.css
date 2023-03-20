@@ -6,6 +6,10 @@ body {
     min-height:60vh;
 }
 
+.min-vh-50{
+    min-height:50vh;
+}
+
 .has-error {
     color: red
 }

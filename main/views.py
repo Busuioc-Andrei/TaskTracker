@@ -1,3 +1,5 @@
+import uuid
+
 from django import forms
 from django.db.models import DateTimeField
 from django.http import HttpResponse
@@ -94,7 +96,7 @@ def echo(request):
 
 class BoardPageView(ListView):
     template_name = "main/board.html"
-    model = Issue
+    model = Column
 
 
 class BoardCreateView(CustomCreateView):
@@ -108,4 +110,16 @@ class BoardCreateView(CustomCreateView):
             Column(name='In Progress', board=board, created_by=self.request.user, modified_by=self.request.user),
             Column(name='Done', board=board, created_by=self.request.user, modified_by=self.request.user),
         ])
+        return super().form_valid(form)
+
+
+class ColumnIssueCreateView(CustomCreateView):
+    model = Issue
+
+    def form_valid(self, form):
+        # add reference to column issue was created in
+        column_id = self.kwargs['column_pk']
+        issue = form.save(commit=False)
+        issue.column = Column.objects.get(pk=column_id)
+        issue.save()
         return super().form_valid(form)
