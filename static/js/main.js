@@ -22,7 +22,8 @@ function updateSortable (event, ui) {
 $(function() {
     $(".sortable-col").sortable({
         connectWith: ".sortable-col",
-        update: updateSortable
+        update: updateSortable,
+        cancel: '.exclude'
     });
 });
 

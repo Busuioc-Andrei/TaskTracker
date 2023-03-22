@@ -1,10 +1,10 @@
 from django.urls import path
 
-from .models import Issue, BaseModel, Project, Board
+from .models import Issue, BaseModel, Project, Board, Column
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, CustomDeleteView, \
     IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateView
 
-generic_models = [Issue, Project, Board]
+generic_models = [Issue, Project, Board, Column]
 
 
 def add_generic_paths(model_types: [type[BaseModel]]):

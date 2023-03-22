@@ -10,6 +10,18 @@ body {
     min-height:50vh;
 }
 
+.overflow-row{
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+
+}
+.overflow-row > .col-5 {
+    display: inline-block;
+    max-width: 250px;
+    vertical-align: top;
+}
+
 .has-error {
     color: red
 }

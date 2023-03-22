@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="row row-cols-5 sortable-col">
+    <div class="row sortable-col overflow-row">
         {% for column in object_list %}
-        <div class="col mx-3 bg-secondary">
+        <div class="col-5 mx-3 bg-secondary">
             <h5 class="pt-2 mb-0 text-light">{{ column.name }}</h5>
             <div class="sortable-item min-vh-50">
                 <div class="mt-3"></div>
@@ -25,5 +25,14 @@
             </div>
         </div>
         {% endfor %}
+        <div class="exclude col-5 mx-3 bg-secondary">
+            <div class="position-relative">
+                <p class="pt-2 text-light">
+                    <i class="bi bi-plus-lg"></i>
+                    Add column
+                </p>
+                <a href="{% url 'column-add'%}" class="stretched-link"></a>
+            </div>
+        </div>
     </div>
 {% endblock %}
