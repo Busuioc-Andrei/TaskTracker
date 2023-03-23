@@ -3,10 +3,12 @@ import uuid
 from django import forms
 from django.db.models import DateTimeField
 from django.http import HttpResponse
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
+from main.forms import ColumnForm
 from main.models import Issue, Board, Column
 from main.widgets import XDSoftDateTimePickerInput
 
@@ -94,9 +96,38 @@ def echo(request):
     return HttpResponse(status=201)
 
 
-class BoardPageView(ListView):
+class BoardGetView(DetailView):
     template_name = "main/board.html"
+    model = Board
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ColumnForm()
+        return context
+
+
+class BoardColumnPostView(CreateView):
+    template_name = "main/board.html"
+    form_class = ColumnForm
     model = Column
+
+    def form_valid(self, form):
+        form.instance.board_id = self.kwargs['pk']
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('board-detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class BoardPageView(View):
+
+    def get(self, request, *args, **kwargs):
+        view = BoardGetView.as_view()
+        return view(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        view = BoardColumnPostView.as_view()
+        return view(request, *args, **kwargs)
 
 
 class BoardCreateView(CustomCreateView):
@@ -111,6 +142,13 @@ class BoardCreateView(CustomCreateView):
             Column(name='Done', board=board, created_by=self.request.user, modified_by=self.request.user),
         ])
         return super().form_valid(form)
+
+
+class BoardColumnDeleteView(CustomDeleteView):
+    model = Column
+
+    def get_success_url(self):
+        return reverse_lazy('board-detail', kwargs={'pk': self.kwargs['board_pk']})
 
 
 class ColumnIssueCreateView(CustomCreateView):

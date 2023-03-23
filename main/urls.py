@@ -2,7 +2,7 @@ from django.urls import path
 
 from .models import Issue, BaseModel, Project, Board, Column
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, CustomDeleteView, \
-    IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateView
+    IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateView, BoardColumnDeleteView
 
 generic_models = [Issue, Project, Board, Column]
 
@@ -33,4 +33,5 @@ urlpatterns = [
     path('board/add/', BoardCreateView.as_view(), name='board-add'),
     path('board/<uuid:pk>/', BoardPageView.as_view(), name='board-detail'),
     path('column/<uuid:column_pk>/issue/add/', ColumnIssueCreateView.as_view(), name='column-issue-add'),
+    path('board/<uuid:board_pk>/column/<uuid:pk>/delete/', BoardColumnDeleteView.as_view(), name='board-column-delete'),
 ] + add_generic_paths(generic_models)  # generic_paths won't overwrite paths already defined

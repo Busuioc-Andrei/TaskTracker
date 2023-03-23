@@ -2,9 +2,21 @@
 
 {% block content %}
     <div class="row sortable-col overflow-row">
-        {% for column in object_list %}
+        {% for column in board.column_set.all %}
         <div class="col-5 mx-3 bg-secondary">
-            <h5 class="pt-2 mb-0 text-light">{{ column.name }}</h5>
+            <div class="btn-toolbar justify-content-between">
+                <h5 class="pt-2 mb-0 text-light">{{ column.name }}</h5>
+                <div class="dropdown">
+                    <button type="button" class="btn text-light px-0" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'board-column-delete' board.id column.id%}">Delete</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <div class="sortable-item min-vh-50">
                 <div class="mt-3"></div>
                 {% for issue in column.issue_set.all %}
@@ -25,13 +37,21 @@
             </div>
         </div>
         {% endfor %}
-        <div class="exclude col-5 mx-3 bg-secondary">
-            <div class="position-relative">
-                <p class="pt-2 text-light">
+        <div class="exclude col-5">
+            <div class="dropdown">
+                <button type="button" class="btn btn-secondary text-light" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
                     <i class="bi bi-plus-lg"></i>
-                    Add column
-                </p>
-                <a href="{% url 'column-add'%}" class="stretched-link"></a>
+                        Add column
+                </button>
+                <form class="dropdown-menu p-4" method="post">{% csrf_token %}
+                    {{ form }}
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg"></i>
+                    </button>
+                    <a class="btn btn-danger save-column">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </form>
             </div>
         </div>
     </div>
