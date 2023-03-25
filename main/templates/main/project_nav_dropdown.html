@@ -1,0 +1,26 @@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Projects
+    </a>
+    <ul class="dropdown-menu">
+        {% for project in project_list %}
+            <li><a class="dropdown-item" href="#">{{ project.name }}</a></li>
+        {% endfor %}
+        {% if project_list %}
+            <li><hr class="dropdown-divider"></li>
+            <li>
+            <a class="dropdown-item" href="{% url 'project-list'%}">
+                <i class="bi bi-gear"></i>
+                Edit Projects
+            </a>
+        </li>
+        {% else %}
+            <li>
+                <a class="dropdown-item" href="{% url 'project-add'%}">
+                    <i class="bi bi-plus-circle"></i>
+                    Add new project
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</li>

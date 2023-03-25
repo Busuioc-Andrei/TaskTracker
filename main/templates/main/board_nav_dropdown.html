@@ -1,0 +1,27 @@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Boards
+    </a>
+    <ul class="dropdown-menu">
+        {% for board in board_list %}
+            <li><a class="dropdown-item" href="{% url 'board-detail' board.id%}">{{ board.name }}</a></li>
+        {% endfor %}
+        {% if board_list %}
+            <li><hr class="dropdown-divider"></li>
+                <li>
+                <a class="dropdown-item" href="{% url 'board-list'%}">
+                    <i class="bi bi-gear"></i>
+                    Edit Boards
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a class="dropdown-item" href="{% url 'board-add'%}">
+                    <i class="bi bi-plus-circle"></i>
+                    Add new board
+                </a>
+            </li>
+        {% endif %}
+
+    </ul>
+</li>

@@ -17,6 +17,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+        <script src="{% static 'js/bootstrap5.modal.forms.min.js' %}"></script>
         <script src="{% static 'js/main.js' %}"></script>
     </head>
     <body class="d-flex flex-column min-vh-100">
@@ -24,7 +25,7 @@
             <div class="container-fluid">
                 <a class="navbar-brand" href="{% url 'index'%}">Task Tracker</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon">a</span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto">
@@ -32,59 +33,8 @@
                             <a class="nav-link" href="{% url 'admin:index'%}">Admin</a>
                         </li>
                         {% if user.is_authenticated %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Projects
-                                </a>
-                                <ul class="dropdown-menu">
-                                    {% for project in project_list %}
-                                        <li><a class="dropdown-item" href="#">{{ project.name }}</a></li>
-                                    {% endfor %}
-                                    {% if project_list %}
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                        <a class="dropdown-item" href="{% url 'project-list'%}">
-                                            <i class="bi bi-gear"></i>
-                                            Edit Projects
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'project-add'%}">
-                                                <i class="bi bi-plus-circle"></i>
-                                                Add new project
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </li>
-                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Boards
-                                </a>
-                                <ul class="dropdown-menu">
-                                    {% for board in board_list %}
-                                        <li><a class="dropdown-item" href="{% url 'board-detail' board.id%}">{{ board.name }}</a></li>
-                                    {% endfor %}
-                                    {% if board_list %}
-                                        <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                            <a class="dropdown-item" href="{% url 'board-list'%}">
-                                                <i class="bi bi-gear"></i>
-                                                Edit Boards
-                                            </a>
-                                        </li>
-                                    {% else %}
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'board-add'%}">
-                                                <i class="bi bi-plus-circle"></i>
-                                                Add new board
-                                            </a>
-                                        </li>
-                                    {% endif %}
-
-                                </ul>
-                            </li>
+                            {% include 'main/project_nav_dropdown.html' %}
+                            {% include 'main/board_nav_dropdown.html' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'issue-list'%}">Issues(temp)</a>
                             </li>
@@ -112,15 +62,6 @@
             {% block content %}
             {% endblock %}
         </div>
-        <div class="container mt-auto">
-            <footer class="py-1 my-2">
-                <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Placeholder1</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Placeholder2</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Placeholder3</a></li>
-                </ul>
-            <p class="text-center text-muted">© 2023 Placeholder</p>
-            </footer>
-        </div>
+        {% include 'footer.html' %}
     </body>
 </html>
