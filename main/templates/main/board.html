@@ -1,54 +1,62 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
     <div class="row sortable-col overflow-row">
         {% for column in board.column_set.all %}
-        <div class="col-5 mx-3 bg-secondary">
-            <div class="btn-toolbar justify-content-between">
-                <h5 class="pt-2 mb-0 text-light">{{ column.name }}</h5>
-                <div class="dropdown">
-                    <button type="button" class="btn text-light px-0" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-                        <i class="bi bi-three-dots-vertical"></i>
+            <div class="col-5 mx-3 bg-secondary">
+                <div class="btn-toolbar justify-content-between">
+                    <h5 class="pt-2 mb-0 text-light">{{ column.name }}</h5>
+                    <div class="dropdown">
+                        <button type="button" class="btn text-light px-0" data-bs-toggle="dropdown"
+                                aria-expanded="false" data-bs-auto-close="outside">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'board-column-delete' board.id column.id %}">Delete</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sortable-item min-vh-50">
+                    <div class="mt-3"></div>
+                    {% for issue in column.issue_set.all %}
+                        <div id="{{ column.id }}_{{ issue.id }}" class="card mt-3">
+                            <div class="card-header">{{ issue.issue_type }}</div>
+                            <div class="card-body">
+                                <p class="card-text">{{ issue.name }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div>
+                    <button class="column-issue-add btn btn-secondary mb-1 ps-0" type="button"
+                            data-form-url="{% url 'column-issue-add' column.id %}">
+                        <i class="bi bi-plus-lg"></i>
+                        Add issue
                     </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="{% url 'board-column-delete' board.id column.id%}">Delete</a>
-                        </li>
-                    </ul>
                 </div>
             </div>
-            <div class="sortable-item min-vh-50">
-                <div class="mt-3"></div>
-                {% for issue in column.issue_set.all %}
-                    <div id="{{ column.id }}_{{issue.id}}" class="card mt-3">
-                        <div class="card-header">{{issue.issue_type}}</div>
-                        <div class="card-body">
-                            <p class="card-text">{{issue.name}}</p>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="position-relative">
-                <p class="text-light">
-                    <i class="bi bi-plus-lg"></i>
-                    Add issue
-                </p>
-                <a href="{% url 'column-issue-add' column.id%}" class="stretched-link"></a>
-            </div>
-        </div>
         {% endfor %}
         <div class="exclude col-5">
             <div class="dropdown">
-                <button type="button" class="btn btn-secondary text-light" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                <button type="button" class="btn btn-secondary text-light" data-bs-toggle="dropdown"
+                        aria-expanded="false" data-bs-auto-close="outside">
                     <i class="bi bi-plus-lg"></i>
-                        Add column
+                    Add column
                 </button>
                 <form id="column-save-form" class="dropdown-menu p-4" method="post">{% csrf_token %}
                     {{ form }}
                     <button type="submit" class="btn btn-success">
                         <i class="bi bi-check-lg"></i>
                     </button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="collapse" data-bs-target="#column-save-form" aria-expanded="false" aria-controls="column-save-form">
+                    <button type="button" class="btn btn-danger" data-bs-toggle="collapse"
+                            data-bs-target="#column-save-form" aria-expanded="false" aria-controls="column-save-form">
                         <i class="bi bi-x-lg"></i>
                     </button>
                 </form>

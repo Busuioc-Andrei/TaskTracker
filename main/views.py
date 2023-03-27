@@ -1,14 +1,13 @@
-import uuid
-
+from bootstrap_modal_forms.generic import BSModalCreateView
 from django import forms
 from django.db.models import DateTimeField
 from django.http import HttpResponse
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from main.forms import ColumnForm
+from main.forms import ColumnForm, IssueModalModelForm
 from main.models import Issue, Board, Column
 from main.widgets import XDSoftDateTimePickerInput
 
@@ -23,6 +22,10 @@ def add_datetime_widget(self, form):  # datetime widget for all datetime fields
                 required=form.fields[date_field].required
             )
     return form
+
+
+def is_ajax(request):
+    return request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
 
 class CustomListView(ListView):
@@ -121,11 +124,13 @@ class BoardColumnPostView(CreateView):
 
 class BoardPageView(View):
 
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         view = BoardGetView.as_view()
         return view(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         view = BoardColumnPostView.as_view()
         return view(request, *args, **kwargs)
 
@@ -151,13 +156,21 @@ class BoardColumnDeleteView(CustomDeleteView):
         return reverse_lazy('board-detail', kwargs={'pk': self.kwargs['board_pk']})
 
 
-class ColumnIssueCreateView(CustomCreateView):
+class ColumnIssueCreateView(CustomCreateView, BSModalCreateView):
     model = Issue
+    template_name = 'main/issue_form_modal.html'
+    fields = None  # set to None because a Form Class is used
+    form_class = IssueModalModelForm
 
     def form_valid(self, form):
-        # add reference to column issue was created in
-        column_id = self.kwargs['column_pk']
-        issue = form.save(commit=False)
-        issue.column = Column.objects.get(pk=column_id)
-        issue.save()
+        if not is_ajax(self.request):
+            # add reference to column issue was created in
+            column_id = self.kwargs['column_pk']
+            issue = form.save(commit=False)
+            issue.column = Column.objects.get(pk=column_id)
+            issue.save()
         return super().form_valid(form)
+
+    def get_success_url(self):
+        column = Column.objects.get(pk=self.kwargs['column_pk'])
+        return reverse_lazy('board-detail', kwargs={'pk': column.board_id})
