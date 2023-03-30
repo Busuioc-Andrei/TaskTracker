@@ -1,11 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="modal fade" tabindex="-1" role="dialog" id="modal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content"></div>
-        </div>
-    </div>
+    {% include 'modal.html' %}
     <div class="row sortable-col overflow-row">
         {% for column in board.column_set.all %}
             <div class="col-5 mx-3 bg-secondary">
@@ -18,7 +14,9 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'board-column-delete' board.id column.id %}">Delete</a>
+                                <button class="model-delete dropdown-item" type="button" data-form-url="{% url 'board-column-delete' board.id column.id %}">
+                                    Delete
+                                </button>
                             </li>
                         </ul>
                     </div>
@@ -35,8 +33,7 @@
                     {% endfor %}
                 </div>
                 <div>
-                    <button class="column-issue-add btn btn-secondary mb-1 ps-0" type="button"
-                            data-form-url="{% url 'column-issue-add' column.id %}">
+                    <button class="column-issue-add btn btn-secondary mb-1 ps-0" type="button" data-form-url="{% url 'column-issue-add' column.id %}">
                         <i class="bi bi-plus-lg"></i>
                         Add issue
                     </button>

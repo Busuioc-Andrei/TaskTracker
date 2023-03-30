@@ -1,15 +1,20 @@
-from bootstrap_modal_forms.generic import BSModalCreateView
+from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView
+from bootstrap_modal_forms.utils import is_ajax
 from django import forms
 from django.db.models import DateTimeField
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.base import ContextMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning
 
 from main.forms import ColumnForm, IssueModalModelForm
 from main.models import Issue, Board, Column
 from main.widgets import XDSoftDateTimePickerInput
+
+import warnings
+warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
 
 
 def add_datetime_widget(self, form):  # datetime widget for all datetime fields
@@ -24,27 +29,21 @@ def add_datetime_widget(self, form):  # datetime widget for all datetime fields
     return form
 
 
-def is_ajax(request):
-    return request.headers.get('x-requested-with') == 'XMLHttpRequest'
+class ModelNameMixin(ContextMixin):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['model_name'] = self.model.__name__ # noqa
+        return context
 
 
-class CustomListView(ListView):
+class CustomListView(ListView, ModelNameMixin):
     template_name = 'main/generic_list.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['model_name'] = self.model.__name__
-        return context
 
-
-class CustomCreateView(CreateView):
+class CustomCreateView(CreateView, ModelNameMixin):
     template_name = 'main/generic_form.html'
     fields = '__all__'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['model_name'] = self.model.__name__
-        return context
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -83,11 +82,21 @@ class CustomDetailView(DetailView):
         return context
 
 
-class CustomDeleteView(DeleteView):
+class CustomDeleteView(DeleteView, ModelNameMixin):
     template_name = 'main/generic_confirm_delete.html'
 
     def get_success_url(self):
         return reverse_lazy(f'{self.model.__name__.lower()}-list')
+
+
+class DeleteModalView(CustomDeleteView, BSModalDeleteView):
+    template_name = 'main/modal_confirm_delete.html'
+
+    def form_valid(self, form):
+        if not is_ajax(self.request.META):
+            return super().form_valid(form)
+        else:
+            return HttpResponseRedirect(super().get_success_url())
 
 
 class IndexPageView(TemplateView):
@@ -149,21 +158,21 @@ class BoardCreateView(CustomCreateView):
         return super().form_valid(form)
 
 
-class BoardColumnDeleteView(CustomDeleteView):
+class BoardColumnDeleteView(DeleteModalView):
     model = Column
 
     def get_success_url(self):
         return reverse_lazy('board-detail', kwargs={'pk': self.kwargs['board_pk']})
 
 
-class ColumnIssueCreateView(CustomCreateView, BSModalCreateView):
+class ColumnIssueCreateModalView(CustomCreateView, BSModalCreateView):
     model = Issue
     template_name = 'main/issue_form_modal.html'
     fields = None  # set to None because a Form Class is used
     form_class = IssueModalModelForm
 
     def form_valid(self, form):
-        if not is_ajax(self.request):
+        if not is_ajax(self.request.META):
             # add reference to column issue was created in
             column_id = self.kwargs['column_pk']
             issue = form.save(commit=False)

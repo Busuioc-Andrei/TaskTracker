@@ -1,8 +1,8 @@
 from django.urls import path
 
 from .models import Issue, BaseModel, Project, Board, Column
-from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, CustomDeleteView, \
-    IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateView, BoardColumnDeleteView
+from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, DeleteModalView, \
+    IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView
 
 generic_models = [Issue, Project, Board, Column]
 
@@ -16,7 +16,7 @@ def add_generic_paths(model_types: [type[BaseModel]]):
         CreateView = type(f'{model_name}CreateView', (CustomCreateView,), {'model': model_type}) # noqa
         UpdateView = type(f'{model_name}UpdateView', (CustomUpdateView,), {'model': model_type}) # noqa
         DetailView = type(f'{model_name}DetailView', (CustomDetailView,), {'model': model_type}) # noqa
-        DeleteView = type(f'{model_name}DeleteView', (CustomDeleteView,), {'model': model_type}) # noqa
+        DeleteView = type(f'{model_name}DeleteView', (DeleteModalView,), {'model': model_type}) # noqa
         generic_paths = generic_paths + [
             path(f'{mnl}s/', ListView.as_view(), name=f'{mnl}-list'), # noqa
             path(f'{mnl}/add/', CreateView.as_view(), name=f'{mnl}-add'), # noqa
@@ -32,6 +32,7 @@ urlpatterns = [
     path('echo/', echo, name='echo'),
     path('board/add/', BoardCreateView.as_view(), name='board-add'),
     path('board/<uuid:pk>/', BoardPageView.as_view(), name='board-detail'),
-    path('column/<uuid:column_pk>/issue/add/', ColumnIssueCreateView.as_view(), name='column-issue-add'),
+    path('column/<uuid:column_pk>/issue/add/', ColumnIssueCreateModalView.as_view(), name='column-issue-add'),
     path('board/<uuid:board_pk>/column/<uuid:pk>/delete/', BoardColumnDeleteView.as_view(), name='board-column-delete'),
+
 ] + add_generic_paths(generic_models)  # generic_paths won't overwrite paths already defined
