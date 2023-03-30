@@ -7,7 +7,7 @@ from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import ContextMixin
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning, FormMixin
 
 from main.forms import ColumnForm, IssueModalModelForm
 from main.models import Issue, Board, Column
@@ -29,8 +29,14 @@ def add_datetime_widget(self, form):  # datetime widget for all datetime fields
     return form
 
 
-class ModelNameMixin(ContextMixin):
+class DatetimePickerMixin(FormMixin):
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form = add_datetime_widget(self, form) # noqa
+        return form
 
+
+class ModelNameMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['model_name'] = self.model.__name__ # noqa
@@ -41,14 +47,9 @@ class CustomListView(ListView, ModelNameMixin):
     template_name = 'main/generic_list.html'
 
 
-class CustomCreateView(CreateView, ModelNameMixin):
+class CustomCreateView(CreateView, ModelNameMixin, DatetimePickerMixin):
     template_name = 'main/generic_form.html'
     fields = '__all__'
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form = add_datetime_widget(self, form)
-        return form
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -56,28 +57,17 @@ class CustomCreateView(CreateView, ModelNameMixin):
         return super().form_valid(form)
 
 
-class CustomUpdateView(UpdateView):
+class CustomUpdateView(UpdateView, ModelNameMixin, DatetimePickerMixin):
     template_name = 'main/generic_edit_form.html'
     fields = '__all__'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['model_name'] = self.model.__name__
-        return context
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form = add_datetime_widget(self, form)
-        return form
-
-
-class CustomDetailView(DetailView):
+class CustomDetailView(DetailView, ModelNameMixin):
     template_name = 'main/generic_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         data = self.get_object().to_dict()
-        context['model_name'] = self.model.__name__
         context['data'] = data
         return context
 
