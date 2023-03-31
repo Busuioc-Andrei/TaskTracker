@@ -1,7 +1,5 @@
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView
 from bootstrap_modal_forms.utils import is_ajax
-from django import forms
-from django.db.models import DateTimeField
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
@@ -9,24 +7,12 @@ from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning, FormMixin
 
+from commons.utils import add_datetime_widget, parse_jquery_sortable, order_columns, order_issues
 from main.forms import ColumnForm, IssueModalModelForm
 from main.models import Issue, Board, Column
-from main.widgets import XDSoftDateTimePickerInput
 
 import warnings
 warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
-
-
-def add_datetime_widget(self, form):  # datetime widget for all datetime fields
-    date_fields = [field.name for field in self.model._meta.get_fields() if type(field) == DateTimeField]  # noqa
-    for date_field in date_fields:
-        if date_field in form.fields:
-            form.fields[date_field] = forms.DateTimeField(
-                input_formats=['%d/%m/%Y %H:%M'],
-                widget=XDSoftDateTimePickerInput(),
-                required=form.fields[date_field].required
-            )
-    return form
 
 
 class DatetimePickerMixin(FormMixin):
@@ -95,6 +81,15 @@ class IndexPageView(TemplateView):
 
 def echo(request):
     print(request.body)
+    return HttpResponse(status=201)
+
+
+def persistent(request):
+    sortable_data = parse_jquery_sortable(request.body)
+    order_columns(sortable_data)
+    order_issues(sortable_data)
+    print(sortable_data)
+
     return HttpResponse(status=201)
 
 

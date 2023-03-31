@@ -2,7 +2,7 @@ from django.urls import path
 
 from .models import Issue, BaseModel, Project, Board, Column
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, DeleteModalView, \
-    IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView
+    IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView, persistent
 
 generic_models = [Issue, Project, Board, Column]
 
@@ -30,6 +30,7 @@ def add_generic_paths(model_types: [type[BaseModel]]):
 urlpatterns = [
     path('', IndexPageView.as_view(), name='index'),
     path('echo/', echo, name='echo'),
+    path('persistent/', persistent, name='persistent'),
     path('board/add/', BoardCreateView.as_view(), name='board-add'),
     path('board/<uuid:pk>/', BoardPageView.as_view(), name='board-detail'),
     path('column/<uuid:column_pk>/issue/add/', ColumnIssueCreateModalView.as_view(), name='column-issue-add'),

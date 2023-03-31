@@ -42,20 +42,31 @@ class Project(BaseModel):
     pass
 
 
+def first_project():
+    if Project:
+        return Project.objects.first()
+    return None
+
+
 class Board(BaseModel):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, default=Project.objects.first())
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, default=first_project)
 
 
 class Column(BaseModel):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    order = models.IntegerField(null=True, editable=False)
+
+    class Meta:
+        ordering = ['order']
 
 
 class Issue(BaseModel):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, default=Project.objects.first())
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, default=first_project)
     column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True, editable=False)
     parent_issue = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
+    order = models.IntegerField(null=True, editable=False)
 
     class IssueType(models.TextChoices):
         EPIC = 'epic', _('Epic')
@@ -67,6 +78,9 @@ class Issue(BaseModel):
         choices=IssueType.choices,
         default=IssueType.TASK
     )
+
+    class Meta:
+        ordering = ['order']
 
 
 # class Epic(Issue):

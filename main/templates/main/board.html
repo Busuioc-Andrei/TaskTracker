@@ -4,7 +4,7 @@
     {% include 'modal.html' %}
     <div class="row sortable-col overflow-row">
         {% for column in board.column_set.all %}
-            <div class="col-5 mx-3 bg-secondary">
+            <div id="column_{{ column.id }}" class="sorted-column col-5 mx-3 bg-secondary">
                 <div class="btn-toolbar justify-content-between">
                     <h5 class="pt-2 mb-0 text-light">{{ column.name }}</h5>
                     <div class="dropdown">

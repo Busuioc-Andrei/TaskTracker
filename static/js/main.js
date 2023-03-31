@@ -5,24 +5,37 @@ $(function () {
     });
 });
 
-function updateSortable(event, ui) {
-    const csrftoken = Cookies.get('csrftoken');
-    const data = $(this).sortable('serialize', {
-        expression: /(.+)_(.+)/
-    });
-    $.ajax({
-        data: data,
-        headers: {'X-CSRFToken': csrftoken},
-        type: 'POST',
-        mode: 'same-origin',
-        url: '/echo/'
-    });
+// var test_a;
+const updateSortable = function(sortedItem) {
+    return function (event, ui){
+        const csrftoken = Cookies.get('csrftoken');
+        let item = ui.item;
+        // test_a = item;
+        // console.log(ui)
+        let newColumn, movedIssue;
+        if (ui.sender != null) {
+            newColumn = item.parentsUntil('.sortable-col', '.sorted-column').attr('id');
+            movedIssue = item.attr('id');
+        }
+        const data = $(this).sortable('serialize', {
+            expression: /(.+)_(.+)/
+        });
+        $.ajax({
+            data: JSON.stringify({'sortedItem': sortedItem,'data': data, 'movedIssue': movedIssue,'newColumn': newColumn}),
+            dataType: "json",
+            contentType: "application/json",
+            headers: {'X-CSRFToken': csrftoken},
+            type: 'POST',
+            mode: 'same-origin',
+            url: '/persistent/'
+        });
+    }
 }
 
 $(function () {
     $(".sortable-col").sortable({
         connectWith: ".sortable-col",
-        update: updateSortable,
+        update: updateSortable('column'),
         cancel: '.exclude'
     });
 });
@@ -30,7 +43,7 @@ $(function () {
 $(function () {
     $(".sortable-item").sortable({
         connectWith: ".sortable-item",
-        update: updateSortable
+        update: updateSortable('issue')
     });
 });
 
