@@ -81,16 +81,16 @@ class IndexPageView(TemplateView):
 
 def echo(request):
     print(request.body)
-    return HttpResponse(status=201)
+    return HttpResponse(status=204)
 
 
 def persistent(request):
     sortable_data = parse_jquery_sortable(request.body)
-    order_columns(sortable_data)
-    order_issues(sortable_data)
-    print(sortable_data)
+    if sortable_data:
+        order_columns(sortable_data)
+        order_issues(sortable_data)
 
-    return HttpResponse(status=201)
+    return HttpResponse(status=204)
 
 
 class BoardGetView(DetailView):

@@ -20,38 +20,45 @@ def add_datetime_widget(self, form):  # datetime widget for all datetime fields
 
 def parse_jquery_sortable(sortable_data_binary):
     sortable_data = json.loads(sortable_data_binary.decode())
-    sortable_data_split = sortable_data['data'].split('&')
+    if not sortable_data['data']:
+        return {}
 
-    parsed_data = []
+    sortable_data_split = sortable_data['data'].split('&')
+    del sortable_data['data']
+
+    sortable_data['order'] = []
     for data in sortable_data_split:
         data_split = data.split('[]=')
-        if data_split[0]:
-            column, row = data_split
-            parsed_data.append({'column': column, 'row': row})
+        sorted_item, item = data_split
+        sortable_data['sortedItem'] = sorted_item
+        sortable_data['order'].append(item)
 
-    sortable_data['data'] = parsed_data
+    if sortable_data['sortedItem'] == 'issue':
+        moved_issue = None
+        new_column = None
+        if 'movedIssue' in sortable_data and 'newColumn' in sortable_data:
+            moved_issue = sortable_data['movedIssue'].split('_')[1]
+            new_column = sortable_data['newColumn'].split('_')[1]
+        sortable_data['movedIssue'] = moved_issue
+        sortable_data['newColumn'] = new_column
+
     return sortable_data
 
 
 def order_columns(sortable_data):
     if sortable_data['sortedItem'] == 'column':
-        for idx, data in enumerate(sortable_data['data']):
-            column = Column.objects.get(pk=data['row'])
+        for idx, item in enumerate(sortable_data['order']):
+            column = Column.objects.get(pk=item)
             column.order = idx
             column.save()
 
 
 def order_issues(sortable_data):
     if sortable_data['sortedItem'] == 'issue':
-        new_column = None
-        moved_issue = None
-        if 'newColumn' in sortable_data and 'movedIssue' in sortable_data:
-            new_column = sortable_data['newColumn'].split('_')[1]
-            moved_issue = sortable_data['movedIssue'].split('_')[1]
-        for idx, data in enumerate(sortable_data['data']):
-            issue = Issue.objects.get(pk=data['row'])
+        for idx, item in enumerate(sortable_data['order']):
+            issue = Issue.objects.get(pk=item)
             issue.order = idx
-            if data['row'] == moved_issue:
-                column = Column.objects.get(pk=new_column)
+            if item == sortable_data['movedIssue']:
+                column = Column.objects.get(pk=sortable_data['newColumn'])
                 issue.column = column
             issue.save()

@@ -24,7 +24,7 @@
                 <div class="sortable-item min-vh-50">
                     <div class="mt-3"></div>
                     {% for issue in column.issue_set.all %}
-                        <div id="{{ column.id }}_{{ issue.id }}" class="card mt-3">
+                        <div id="issue_{{ issue.id }}" class="card mt-3">
                             <div class="card-header">{{ issue.issue_type }}</div>
                             <div class="card-body">
                                 <p class="card-text">{{ issue.name }}</p>
