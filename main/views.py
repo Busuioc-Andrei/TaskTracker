@@ -4,29 +4,15 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView
-from django.views.generic.base import ContextMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning, FormMixin
 
-from commons.utils import add_datetime_widget, parse_jquery_sortable, order_columns, order_issues
-from main.forms import ColumnForm, IssueModalModelForm
+from commons.mixins import ModelNameMixin, DatetimePickerMixin
+from commons.utils import parse_jquery_sortable, order_columns, order_issues
+from main.forms import ColumnForm, IssueModalModelForm, IssueForm
 from main.models import Issue, Board, Column
 
 import warnings
 warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
-
-
-class DatetimePickerMixin(FormMixin):
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form = add_datetime_widget(self, form) # noqa
-        return form
-
-
-class ModelNameMixin(ContextMixin):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['model_name'] = self.model.__name__ # noqa
-        return context
 
 
 class CustomListView(ListView, ModelNameMixin):
@@ -168,3 +154,15 @@ class ColumnIssueCreateModalView(CustomCreateView, BSModalCreateView):
     def get_success_url(self):
         column = Column.objects.get(pk=self.kwargs['column_pk'])
         return reverse_lazy('board-detail', kwargs={'pk': column.board_id})
+
+
+class IssueCreateView(CustomCreateView):
+    model = Issue
+    form_class = IssueForm
+    fields = None
+
+
+class IssueUpdateView(CustomUpdateView):
+    model = Issue
+    form_class = IssueForm
+    fields = None

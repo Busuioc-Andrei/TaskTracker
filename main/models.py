@@ -1,6 +1,7 @@
 import uuid
 from itertools import chain
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.utils.translation import gettext_lazy as _
@@ -11,9 +12,11 @@ class BaseModel(models.Model):
     name = models.CharField(max_length=300)
     description = models.CharField(max_length=5000, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_created', null=True, editable=False)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_created', null=True,
+                                   editable=False)
     modified_at = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_modified', null=True, editable=False)
+    modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_modified', null=True,
+                                    editable=False)
 
     class Meta:
         abstract = True
@@ -60,6 +63,11 @@ class Column(BaseModel):
         ordering = ['order']
 
 
+def epic_no_parent(value):
+    if value % 2 != 0:
+        raise ValidationError(_("Epic can't have parent issue"))
+
+
 class Issue(BaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=first_project)
     column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True, editable=False)
@@ -81,33 +89,6 @@ class Issue(BaseModel):
 
     class Meta:
         ordering = ['order']
-
-
-# class Epic(Issue):
-#     def __str__(self):
-#         return self.name
-#
-#
-# class UserStory(Issue):
-#     parent_issue = models.ForeignKey(Epic, on_delete=models.SET_NULL, null=True)
-#     start_date = models.DateTimeField(null=True)
-#     end_date = models.DateTimeField(null=True)
-#
-#     def __str__(self):
-#         return self.name
-#
-#
-# class Task(BaseModel):
-#     # parent_issue = models.ForeignKey(Issue, on_delete=models.SET_NULL, null=True)
-#     start_date = models.DateTimeField(null=True)
-#     end_date = models.DateTimeField(null=True)
-#
-#     def __str__(self):
-#         return self.name
-#
-#     def get_absolute_url(self):
-#         from django.urls import reverse
-#         return reverse('task-detail', kwargs={'pk': self.pk})
 
 
 class Comment(BaseModel):
