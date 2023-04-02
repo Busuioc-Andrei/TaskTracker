@@ -10,8 +10,8 @@ class ColumnForm(ModelForm):
         fields = ['name']
 
 
-def issue_validations(self, parent_issue, id):
-    if id == parent_issue.id:
+def issue_validations(self, parent_issue, issue_id):
+    if issue_id == parent_issue.id:
         self.add_error(field='parent_issue', error="Issue cannot be it's own parent.")
 
 
@@ -26,14 +26,14 @@ def user_story_validations(self, issue_type, parent_issue):
             self.add_error(field='parent_issue', error="User Stories can only have Epics as parents.")
 
 
-def task_validations(self, issue_type, parent_issue, id):
+def task_validations(self, issue_type, parent_issue, issue_id):
     if issue_type == 'task':
         next_parent = parent_issue.parent_issue
         print(next_parent)
         for _ in range(100):
             if not next_parent:
                 break
-            elif next_parent.id == id:
+            elif next_parent.id == issue_id:
                 self.add_error(field='parent_issue', error="Circular reference detected.")
                 break
             next_parent = next_parent.parent_issue
@@ -48,14 +48,14 @@ class IssueForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        id = self.instance.pk
+        issue_id = self.instance.pk
         issue_type = cleaned_data.get("issue_type")
         parent_issue = cleaned_data.get("parent_issue")
         if issue_type and parent_issue:
-            issue_validations(self, parent_issue=parent_issue, id=id)
+            issue_validations(self, parent_issue=parent_issue, issue_id=issue_id)
             epic_validations(self, issue_type=issue_type)
             user_story_validations(self, issue_type=issue_type, parent_issue=parent_issue)
-            task_validations(self, issue_type=issue_type, parent_issue=parent_issue, id=id)
+            task_validations(self, issue_type=issue_type, parent_issue=parent_issue, issue_id=issue_id)
 
 
 class IssueModalModelForm(IssueForm, BSModalModelForm):

@@ -32,10 +32,13 @@ urlpatterns = [
     path('', IndexPageView.as_view(), name='index'),
     path('echo/', echo, name='echo'),
     path('persistent/', persistent, name='persistent'),
+
     path('board/add/', BoardCreateView.as_view(), name='board-add'),
     path('board/<uuid:pk>/', BoardPageView.as_view(), name='board-detail'),
     path('board/<uuid:board_pk>/column/<uuid:pk>/delete/', BoardColumnDeleteView.as_view(), name='board-column-delete'),
+
     path('column/<uuid:column_pk>/issue/add/', ColumnIssueCreateModalView.as_view(), name='column-issue-add'),
+
     path('issue/add/', IssueCreateView.as_view(), name='issue-add'),
     path('issue/<uuid:pk>/update/', IssueUpdateView.as_view(), name='issue-update'),
 
