@@ -23,12 +23,12 @@
                             <td>{{object.description}}</td>
                             <td>{{object.created_by}}</td>
                             <td>
-                                <button class="btn btn-primary mr-4" type="button" href="{% url model_name|lower|add:'-update' object.id%}">
+                                <a class="btn btn-primary mr-4" href="{% url model_name|lower|add:'-update' object.id%}">
                                     Edit
-                                </button>
-                                <button class="btn btn-secondary" type="button" href="{{object.get_absolute_url}}">
+                                </a>
+                                <a class="btn btn-secondary" href="{{object.get_absolute_url}}">
                                     Details
-                                </button>
+                                </a>
                                 <button class="model-delete btn btn-danger" type="button" data-form-url="{% url model_name|lower|add:'-delete' object.id%}">
                                     Delete
                                 </button>
