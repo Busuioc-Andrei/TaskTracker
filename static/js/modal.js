@@ -1,20 +1,40 @@
-function addFormURLtoClass(className) {
+function addFormURLtoClass(className, modalID) {
     let buttons = document.getElementsByClassName(className);
     for (let index = 0; index < buttons.length; index++) {
         modalForm(buttons[index], {
-            formURL: buttons[index]["dataset"]["formUrl"]
+            formURL: buttons[index]["dataset"]["formUrl"],
+            modalID: modalID
+        });
+    }
+}
+
+function addFormURLtoClassAsync(className, modalID) {
+    let buttons = document.getElementsByClassName(className);
+    for (let index = 0; index < buttons.length; index++) {
+        modalForm(buttons[index], {
+            formURL: buttons[index]["dataset"]["formUrl"],
+            modalID: modalID,
+            asyncUpdate: true,
+            asyncSettings: {
+                closeOnSubmit: false,
+                successMessage: "<div></div>",
+                dataUrl: "/empty/",
+                dataElementId: "placeholder",
+                dataKey: "placeholder",
+                addModalFormFunction: addFormURLtoClassAsync
+            }
         });
     }
 }
 
 $(function () {
-    addFormURLtoClass("column-issue-add");
-    addFormURLtoClass("model-delete");
+    addFormURLtoClass("modal-link-m", "#modal-m");
+    addFormURLtoClassAsync("modal-link-xl-async", "#modal-xl");
 });
 
 $(function () {
-    const targetNode = document.getElementsByClassName("modal-content")[0];
-    if (targetNode){
+    const targetNodes = document.getElementsByClassName("modal-content");
+    for (let targetNode of targetNodes){
         const callback = (mutationList, observer) => {
             for (const mutation of mutationList) {
                 if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
@@ -28,3 +48,10 @@ $(function () {
         observer.observe(targetNode, {childList: true});
     }
 });
+
+function setSubmitButtonName(button) {
+    $('<input>').attr({
+        type: 'hidden',
+        name: button.name
+    }).appendTo(button.form)
+}

@@ -1,0 +1,54 @@
+<form method="post" action="">
+    {% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    {% load custom_crispy %}
+    <div class="container modal-body">
+        <div class="row">
+            <div class="col">
+                <button class="btn close float-end" type="button" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div>
+                    {{ form.name|as_crispy_field }}
+                    {{ form.description|as_crispy_field }}
+                </div>
+                <div>
+                    <h6>Comments</h6>
+                        <div class="mb-3">
+                            {{ comment_form.description|remove_label|as_crispy_field }}
+{#                            {% crispy comment_form %}#}
+                            <button type="submit" name="comment_submit" value="Post" class="btn btn-primary" onclick="setSubmitButtonName(this)">
+                                Post
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            {% for comment in comments %}
+                                <input class="form-control mb-3" type="text" value="{{ comment.description }}" aria-label="readonly input example" readonly>
+                            {% endfor %}
+                        </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <h6>Details</h6>
+                {% include 'inline_field.html' with field=form.project %}
+                {% include 'inline_field.html' with field=form.issue_type %}
+                {% include 'inline_field.html' with field=form.parent_issue %}
+                {% include 'inline_field.html' with field=form.start_date %}
+                {% include 'inline_field.html' with field=form.end_date %}
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+            <button type="submit" name="issue_submit" class="btn btn-primary" onclick="setSubmitButtonName(this)">Save</button>
+        </div>
+    </div>
+</form>
+{#<form id="comment-form" method="post" action="">#}
+{#    {% csrf_token %}#}
+{#</form>#}

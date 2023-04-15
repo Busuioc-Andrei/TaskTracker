@@ -22,6 +22,11 @@ body {
     vertical-align: top;
 }
 
+.card .btn{
+   z-index: 2;
+   position: relative;
+}
+
 .has-error {
     color: red
 }

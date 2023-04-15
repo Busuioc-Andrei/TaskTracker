@@ -1,6 +1,8 @@
-from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView
+from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView, BSModalUpdateView
 from bootstrap_modal_forms.utils import is_ajax
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView
@@ -8,8 +10,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, Delete
 
 from commons.mixins import ModelNameMixin, DatetimePickerMixin
 from commons.utils import parse_jquery_sortable, order_columns, order_issues
-from main.forms import ColumnForm, IssueModalModelForm, IssueForm
-from main.models import Issue, Board, Column
+from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm
+from main.models import Issue, Board, Column, Comment
 
 import warnings
 warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
@@ -68,6 +70,11 @@ class IndexPageView(TemplateView):
 def echo(request):
     print(request.body)
     return HttpResponse(status=204)
+
+
+def empty(request):
+    if request.method == 'GET':
+        return HttpResponse(200)
 
 
 def persistent(request):
@@ -136,11 +143,18 @@ class BoardColumnDeleteView(DeleteModalView):
         return reverse_lazy('board-detail', kwargs={'pk': self.kwargs['board_pk']})
 
 
+class BoardIssueDeleteView(DeleteModalView):
+    model = Issue
+
+    def get_success_url(self):
+        return reverse_lazy('board-detail', kwargs={'pk': self.kwargs['board_pk']})
+
+
 class ColumnIssueCreateModalView(CustomCreateView, BSModalCreateView):
     model = Issue
     template_name = 'main/issue_form_modal.html'
+    form_class = IssueModalForm
     fields = None  # set to None because a Form Class is used
-    form_class = IssueModalModelForm
 
     def form_valid(self, form):
         if not is_ajax(self.request.META):
@@ -166,3 +180,60 @@ class IssueUpdateView(CustomUpdateView):
     model = Issue
     form_class = IssueForm
     fields = None
+
+
+class BoardIssueUpdateModalView(CustomUpdateView, BSModalUpdateView):
+    model = Issue
+    template_name = 'main/issue_edit_modal.html'
+    form_class = IssueModalUpdateForm
+    fields = None
+
+    def form_valid(self, form):
+        if not is_ajax(self.request.META):
+            form.save()
+        return super().form_valid(form)
+
+    # def form_invalid(self, form):
+    #     print(form.errors)
+    #     return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm(prefix='comment')
+
+        issue_id = self.kwargs['pk']
+        issue = Issue.objects.get(pk=issue_id)
+
+        context['comments'] = issue.comment_set.all()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if 'comment_submit' in request.POST and not is_ajax(self.request.META):
+            return IssueCommentCreateView.as_view()(request, *args, **kwargs)
+        else:
+            return super().post(request, *args, **kwargs)
+
+
+class IssueDetailView(CustomDetailView):
+    model = Issue
+
+
+class IssueCommentCreateView(CustomCreateView):
+    model = Comment
+    form_class = CommentForm
+    fields = None
+
+    def form_valid(self, form):
+        if not form.cleaned_data['description'].strip():
+            form.add_error('description', "Comment can't be empty")
+            return self.form_invalid(form)
+
+        if not is_ajax(self.request.META):
+            comment = form.save(commit=False)
+            comment.created_by = self.request.user
+            comment.modified_by = self.request.user
+
+            issue_id = self.kwargs['pk']
+            comment.issue = Issue.objects.get(pk=issue_id)
+            comment.save()
+        return HttpResponse(status=200)

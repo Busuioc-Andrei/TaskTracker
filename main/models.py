@@ -57,15 +57,10 @@ class Board(BaseModel):
 
 class Column(BaseModel):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    order = models.IntegerField(null=True, editable=False)
+    order = models.IntegerField(null=True, editable=False, default=999)
 
     class Meta:
         ordering = ['order']
-
-
-def epic_no_parent(value):
-    if value % 2 != 0:
-        raise ValidationError(_("Epic can't have parent issue"))
 
 
 class Issue(BaseModel):
@@ -92,4 +87,7 @@ class Issue(BaseModel):
 
 
 class Comment(BaseModel):
-    pass
+    name = models.CharField(max_length=300, blank=True)
+    description = models.CharField(max_length=5000, blank=False, null=False)
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
+

@@ -1,7 +1,10 @@
 from bootstrap_modal_forms.forms import BSModalModelForm
-from django.forms import ModelForm
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, HTML, Submit, Field, Row
+from django import forms
+from django.forms import ModelForm, formset_factory
 
-from main.models import Column, Issue
+from main.models import Column, Issue, Comment
 
 
 class ColumnForm(ModelForm):
@@ -29,7 +32,6 @@ def user_story_validations(self, issue_type, parent_issue):
 def task_validations(self, issue_type, parent_issue, issue_id):
     if issue_type == 'task':
         next_parent = parent_issue.parent_issue
-        print(next_parent)
         for _ in range(100):
             if not next_parent:
                 break
@@ -58,5 +60,28 @@ class IssueForm(ModelForm):
             task_validations(self, issue_type=issue_type, parent_issue=parent_issue, issue_id=issue_id)
 
 
-class IssueModalModelForm(IssueForm, BSModalModelForm):
+class IssueModalForm(IssueForm, BSModalModelForm):
     pass
+
+
+class IssueModalUpdateForm(IssueForm, BSModalModelForm):
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 5}), required=False)
+
+
+class CommentForm(ModelForm):
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+    prefix = 'comment'
+
+    class Meta:
+        model = Comment
+        fields = ['description']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_show_labels = False
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field('description', form='comment-form'),
+            # Submit('submit', 'Submit', css_class='button white'),
+        )

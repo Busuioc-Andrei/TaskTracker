@@ -1,0 +1,10 @@
+{% load crispy_forms_filters %}
+{% load custom_crispy %}
+<div class="row">
+    <div class="col">
+        {{ field.label_tag }}
+    </div>
+    <div class="col">
+        {{ field|remove_label|as_crispy_field }}
+    </div>
+</div>
