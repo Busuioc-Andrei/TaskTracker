@@ -38,9 +38,12 @@ $(function () {
         const callback = (mutationList, observer) => {
             for (const mutation of mutationList) {
                 if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+
                     const arr = document.querySelectorAll('.modal script');
                     for (let n = 0; n < arr.length; n++)
                         eval(arr[n].innerHTML)
+
+                    addFormURLtoClass("modal-link-m", "#modal-m");
                 }
             }
         };

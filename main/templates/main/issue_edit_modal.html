@@ -19,16 +19,30 @@
                 </div>
                 <div>
                     <h6>Comments</h6>
-                        <div class="mb-3">
-                            {{ comment_form.description|remove_label|as_crispy_field }}
+                        <div class="row gx-2 mb-3">
+                            <div class="col">
+                                {{ comment_form.description|remove_label|as_crispy_field }}
+                            </div>
 {#                            {% crispy comment_form %}#}
-                            <button type="submit" name="comment_submit" value="Post" class="btn btn-primary" onclick="setSubmitButtonName(this)">
-                                Post
+                            <div class="col-auto">
+                            <button type="submit" name="comment_submit" class="btn btn-primary" onclick="setSubmitButtonName(this)">
+                                <i class="bi bi-send-fill"></i>
                             </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             {% for comment in comments %}
-                                <input class="form-control mb-3" type="text" value="{{ comment.description }}" aria-label="readonly input example" readonly>
+                                <div class="row gx-2">
+                                    <div class="col">
+                                        <input class="form-control mb-3" type="text" value="{{ comment.description }}" aria-label="readonly input example" readonly>
+                                    </div>
+                                    <div class="col-auto">
+                                        {% url 'issue-comment-delete' comment.id as comment_delete_url %}
+                                    {% include 'main/modal_delete_button.html' with button_class="btn-outline-dark" url=comment_delete_url %}
+                                    </div>
+
+                                </div>
+
                             {% endfor %}
                         </div>
                 </div>

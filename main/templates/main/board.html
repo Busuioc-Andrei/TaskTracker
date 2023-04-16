@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% include 'modal.html' with size="m"%}
+    {% include 'modal.html' with size="m" z_index="10000"%}
     {% include 'modal.html' with size="xl" %}
     <div class="row sortable-col overflow-row">
         {% for column in board.column_set.all %}
             <div id="column_{{ column.id }}" class="sorted-column col-5 mx-3 bg-secondary">
                 <div class="btn-toolbar justify-content-between">
                     <h5 class="pt-2 mb-0 text-light">{{ column.name }}</h5>
-                    {% url 'board-column-delete' board.id column.id as column_delete_url %}
-                    {% include 'main/modal_delete_button.html' with button_class="text-light" url=column_delete_url %}
+                    {% url 'board-column-delete' column.id as column_delete_url %}
+                    {% include 'main/modal_delete_button.html' with button_class="text-light px-0" url=column_delete_url %}
                 </div>
                 <div class="sortable-item min-vh-50">
                     <div class="mt-3"></div>
@@ -18,8 +18,8 @@
                             <div class="card-header">
                                 <div class="btn-toolbar justify-content-between">
                                     {{ issue.issue_type }}
-                                    {% url 'board-issue-delete' board.id issue.id as issue_delete_url %}
-                                    {% include 'main/modal_delete_button.html' with button_class="py-0" url=issue_delete_url %}
+                                    {% url 'board-issue-delete' issue.id as issue_delete_url %}
+                                    {% include 'main/modal_delete_button.html' with button_class="px-0 py-0" url=issue_delete_url %}
                                 </div>
                             </div>
                             <div class="card-body">

@@ -62,6 +62,9 @@ class DeleteModalView(CustomDeleteView, BSModalDeleteView):
         else:
             return HttpResponseRedirect(super().get_success_url())
 
+    def get_success_url(self):
+        return self.request.META['HTTP_REFERER']
+
 
 class IndexPageView(TemplateView):
     template_name = "index.html"
@@ -139,15 +142,13 @@ class BoardCreateView(CustomCreateView):
 class BoardColumnDeleteView(DeleteModalView):
     model = Column
 
-    def get_success_url(self):
-        return reverse_lazy('board-detail', kwargs={'pk': self.kwargs['board_pk']})
-
 
 class BoardIssueDeleteView(DeleteModalView):
     model = Issue
 
-    def get_success_url(self):
-        return reverse_lazy('board-detail', kwargs={'pk': self.kwargs['board_pk']})
+
+class IssueCommentDeleteView(DeleteModalView):
+    model = Comment
 
 
 class ColumnIssueCreateModalView(CustomCreateView, BSModalCreateView):

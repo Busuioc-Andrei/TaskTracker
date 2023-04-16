@@ -1,11 +1,12 @@
 from django.urls import path
 
-from .models import Issue, BaseModel, Project, Board, Column
+from .models import Issue, BaseModel, Project, Board, Column, Comment
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, DeleteModalView, \
     IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView, persistent, \
-    IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView
+    IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView, \
+    IssueCommentDeleteView
 
-generic_models = [Issue, Project, Board, Column]
+generic_models = [Issue, Project, Board, Column, Comment]
 
 
 def add_generic_paths(model_types: [type[BaseModel]]):
@@ -36,14 +37,15 @@ urlpatterns = [
 
     path('board/add/', BoardCreateView.as_view(), name='board-add'),
     path('board/<uuid:pk>/', BoardPageView.as_view(), name='board-detail'),
-    path('board/<uuid:board_pk>/column/<uuid:pk>/delete/', BoardColumnDeleteView.as_view(), name='board-column-delete'),
+    path('boardc/column/<uuid:pk>/delete/', BoardColumnDeleteView.as_view(), name='board-column-delete'),
     path('board/issue/<uuid:pk>/update/', BoardIssueUpdateModalView.as_view(), name='board-issue-update'),
-    path('board/<uuid:board_pk>/issue/<uuid:pk>/delete/', BoardIssueDeleteView.as_view(), name='board-issue-delete'),
+    path('board/issue/<uuid:pk>/delete/', BoardIssueDeleteView.as_view(), name='board-issue-delete'),
 
     path('column/<uuid:column_pk>/issue/add/', ColumnIssueCreateModalView.as_view(), name='column-issue-add'),
 
     path('issue/add/', IssueCreateView.as_view(), name='issue-add'),
     path('issue/<uuid:pk>/update/', IssueUpdateView.as_view(), name='issue-update'),
     path('issue/<uuid:pk>/comment/add/', IssueCommentCreateView.as_view(), name='issue-comment-add'),
+    path('comment/<uuid:pk>/delete/', IssueCommentDeleteView.as_view(), name='issue-comment-delete'),
 
 ] + add_generic_paths(generic_models)  # generic_paths won't overwrite paths already defined
