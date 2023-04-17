@@ -31,6 +31,10 @@ body {
     color: red
 }
 
+.bg-light-gray{
+    background-color: #B1B1B1;
+}
+
 table.dataTable thead .sorting:after,
 table.dataTable thead .sorting:before,
 table.dataTable thead .sorting_asc:after,
