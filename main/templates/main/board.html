@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% include 'modal.html' with size="m" z_index="10000"%}
+    {% include 'modal.html' with size="m" z_index="10000" %}
     {% include 'modal.html' with size="xl" %}
     <div class="row sortable-col overflow-row">
         {% for column in board.column_set.all %}
@@ -25,12 +25,14 @@
                             <div class="card-body">
                                 <p class="card-text">{{ issue.name }}</p>
                             </div>
-                            <a class="modal-link-xl-async stretched-link" data-form-url="{% url 'board-issue-update' issue.id %}" role="button"></a>
+                            <a class="modal-link-xl-async stretched-link"
+                               data-form-url="{% url 'board-issue-update' issue.id %}" role="button"></a>
                         </div>
                     {% endfor %}
                 </div>
                 <div>
-                    <button class="modal-link-m btn-secondary bg-light-gray text-light border-0 mb-1 ps-0" type="button" data-form-url="{% url 'column-issue-add' column.id %}">
+                    <button class="modal-link-m btn-secondary bg-light-gray text-light border-0 mb-1 ps-0" type="button"
+                            data-form-url="{% url 'column-issue-add' column.id %}">
                         <i class="bi bi-plus-lg"></i>
                         Add issue
                     </button>
@@ -44,16 +46,7 @@
                     <i class="bi bi-plus-lg"></i>
                     Add column
                 </button>
-                <form id="column-save-form" class="dropdown-menu p-4" method="post">{% csrf_token %}
-                    {{ form }}
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-lg"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="collapse"
-                            data-bs-target="#column-save-form" aria-expanded="false" aria-controls="column-save-form">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
-                </form>
+                {% include 'dropdown-form.html' with form=form form_id='column-save-form' %}
             </div>
         </div>
     </div>

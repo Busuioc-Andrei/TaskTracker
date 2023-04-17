@@ -1,0 +1,22 @@
+{% load crispy_forms_filters %}
+{% load custom_crispy %}
+<div class="container">
+    <form id="{{ form_id }}" class="dropdown-menu p-3" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="row justify-content-end gx-2">
+            <div class="col-auto">
+                <button type="button" class="btn btn-danger" data-bs-toggle="collapse"
+                        data-bs-target="#{{ form_id }}" aria-expanded="false"
+                        aria-controls="{{ form_id }}">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-lg"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
