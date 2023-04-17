@@ -38,7 +38,7 @@
                                     </div>
                                     <div class="col-auto">
                                         {% url 'issue-comment-delete' comment.id as comment_delete_url %}
-                                    {% include 'main/modal_delete_button.html' with button_class="btn-outline-dark" url=comment_delete_url %}
+                                    {% include 'modal/modal_delete_button.html' with button_class="btn-outline-dark" url=comment_delete_url %}
                                     </div>
 
                                 </div>

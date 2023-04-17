@@ -18,11 +18,11 @@ warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
 
 
 class CustomListView(ListView, ModelNameMixin):
-    template_name = 'main/generic_list.html'
+    template_name = 'generic/generic_list.html'
 
 
 class CustomCreateView(CreateView, ModelNameMixin, DatetimePickerMixin):
-    template_name = 'main/generic_form.html'
+    template_name = 'generic/generic_form.html'
     fields = '__all__'
 
     def form_valid(self, form):
@@ -32,12 +32,12 @@ class CustomCreateView(CreateView, ModelNameMixin, DatetimePickerMixin):
 
 
 class CustomUpdateView(UpdateView, ModelNameMixin, DatetimePickerMixin):
-    template_name = 'main/generic_edit_form.html'
+    template_name = 'generic/generic_edit_form.html'
     fields = '__all__'
 
 
 class CustomDetailView(DetailView, ModelNameMixin):
-    template_name = 'main/generic_detail.html'
+    template_name = 'generic/generic_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -47,14 +47,14 @@ class CustomDetailView(DetailView, ModelNameMixin):
 
 
 class CustomDeleteView(DeleteView, ModelNameMixin):
-    template_name = 'main/generic_confirm_delete.html'
+    template_name = 'generic/generic_confirm_delete.html'
 
     def get_success_url(self):
         return reverse_lazy(f'{self.model.__name__.lower()}-list')
 
 
 class DeleteModalView(CustomDeleteView, BSModalDeleteView):
-    template_name = 'main/modal_confirm_delete.html'
+    template_name = 'modal/modal_confirm_delete.html'
 
     def form_valid(self, form):
         if not is_ajax(self.request.META):
