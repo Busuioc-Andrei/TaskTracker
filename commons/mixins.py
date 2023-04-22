@@ -15,4 +15,6 @@ class ModelNameMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['model_name'] = self.model.__name__ # noqa
+        context['model_verbose_name'] = self.model._meta.verbose_name.title()  # noqa
+        context['model_verbose_name_plural'] = self.model._meta.verbose_name_plural.title()  # noqa
         return context

@@ -1,12 +1,12 @@
 from django.urls import path
 
-from .models import Issue, BaseModel, Project, Board, Column, Comment
+from .models import Issue, BaseModel, Project, Board, Column, Comment, ColorLabel
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, DeleteModalView, \
     IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView, persistent, \
     IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView, \
     IssueCommentDeleteView
 
-generic_models = [Issue, Project, Board, Column, Comment]
+generic_models = [Issue, Project, Board, Column, Comment, ColorLabel]
 
 
 def add_generic_paths(model_types: [type[BaseModel]]):
@@ -37,7 +37,7 @@ urlpatterns = [
 
     path('board/add/', BoardCreateView.as_view(), name='board-add'),
     path('board/<uuid:pk>/', BoardPageView.as_view(), name='board-detail'),
-    path('boardc/column/<uuid:pk>/delete/', BoardColumnDeleteView.as_view(), name='board-column-delete'),
+    path('board/column/<uuid:pk>/delete/', BoardColumnDeleteView.as_view(), name='board-column-delete'),
     path('board/issue/<uuid:pk>/update/', BoardIssueUpdateModalView.as_view(), name='board-issue-update'),
     path('board/issue/<uuid:pk>/delete/', BoardIssueDeleteView.as_view(), name='board-issue-delete'),
 

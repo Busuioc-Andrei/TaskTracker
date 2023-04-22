@@ -2,7 +2,7 @@
 
 {% block content %}
     {% include 'back_button.html' %}
-    <h4>{{ model_name }}</h4>
+    <h4>{{ model_verbose_name }}</h4>
     {% for key, value in data.items %}
         <p>{{ key|capfirst }}: {{ value|default_if_none:'' }}</p>
     {% endfor %}

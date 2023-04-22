@@ -1,7 +1,7 @@
 import uuid
 from itertools import chain
 
-from django.core.exceptions import ValidationError
+from colorfield.fields import ColorField
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.utils.translation import gettext_lazy as _
@@ -11,10 +11,10 @@ class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=300)
     description = models.CharField(max_length=5000, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_created', null=True,
                                    editable=False)
-    modified_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField(auto_now=True, null=True)
     modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_modified', null=True,
                                     editable=False)
 
@@ -63,10 +63,22 @@ class Column(BaseModel):
         ordering = ['order']
 
 
+class ColorLabel(BaseModel):
+    color = ColorField(default='#0000FF')
+
+
+default_issue_type_color_label_mapping = {
+    'epic': 'Warning',
+    'user_story': 'Success',
+    'task': 'Primary'
+}
+
+
 class Issue(BaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=first_project)
     column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True, editable=False)
     parent_issue = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    color_label = models.ForeignKey(ColorLabel, on_delete=models.SET_NULL, null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     order = models.IntegerField(null=True, editable=False)
@@ -82,6 +94,18 @@ class Issue(BaseModel):
         default=IssueType.TASK
     )
 
+    def add_default_color_label(self):
+        if not self.color_label and self.issue_type:
+            issue_type_color_label_mapping = default_issue_type_color_label_mapping
+            color_label_name = issue_type_color_label_mapping.get(self.issue_type)
+            color_label = ColorLabel.objects.filter(name=color_label_name).first()
+            if color_label:
+                self.color_label = color_label
+
+    def save(self, *args, **kwargs):
+        self.add_default_color_label()
+        super().save(*args, **kwargs)
+
     class Meta:
         ordering = ['order']
 
@@ -90,4 +114,3 @@ class Comment(BaseModel):
     name = models.CharField(max_length=300, blank=True)
     description = models.CharField(max_length=5000, blank=False, null=False)
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
-

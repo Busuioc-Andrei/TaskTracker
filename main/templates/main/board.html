@@ -15,11 +15,11 @@
                     <div class="mt-3"></div>
                     {% for issue in column.issue_set.all %}
                         <div id="issue_{{ issue.id }}" class="card border-0 mt-3">
-                            <div class="card-header bg-primary bg-gradient text-light">
+                            <div class="card-header bg-gradient" style="background-color: {{ issue.color_label.color }};">
                                 <div class="btn-toolbar justify-content-between">
                                     {{ issue.get_issue_type_display }}
                                     {% url 'board-issue-delete' issue.id as issue_delete_url %}
-                                    {% include 'modal/modal_delete_button.html' with button_class="text-light px-0 py-0" url=issue_delete_url %}
+                                    {% include 'modal/modal_delete_button.html' with button_class="px-0 py-0" url=issue_delete_url %}
                                 </div>
                             </div>
                             <div class="card-body">

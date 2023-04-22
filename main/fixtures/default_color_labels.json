@@ -1,0 +1,58 @@
+[
+  {
+    "model": "main.colorlabel",
+    "fields": {
+      "name": "Primary",
+      "color": "#0d6efd"
+    }
+  },
+    {
+    "model": "main.colorlabel",
+    "fields": {
+      "name": "Secondary",
+      "color": "#6c757d"
+    }
+  },
+  {
+    "model": "main.colorlabel",
+    "fields": {
+      "name": "Success",
+      "color": "#198754"
+    }
+  },
+  {
+    "model": "main.colorlabel",
+    "fields": {
+      "name": "Info",
+      "color": "#0dcaf0"
+    }
+  },
+  {
+    "model": "main.colorlabel",
+    "fields": {
+      "name": "Warning",
+      "color": "#ffc107"
+    }
+  },
+  {
+    "model": "main.colorlabel",
+    "fields": {
+      "name": "Danger",
+      "color": "#dc3545"
+    }
+  },
+  {
+    "model": "main.colorlabel",
+    "fields": {
+      "name": "Light",
+      "color": "#f8f9fa"
+    }
+  },
+  {
+    "model": "main.colorlabel",
+    "fields": {
+      "name": "Dark",
+      "color": "#212529"
+    }
+  }
+]

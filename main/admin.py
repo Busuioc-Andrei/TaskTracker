@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from main.models import Issue, Project, Board, Column
+from main.models import Issue, Project, Board, Column, ColorLabel
 
 
 @admin.register(Project)
@@ -19,5 +19,10 @@ class IssueAdmin(admin.ModelAdmin):
 
 
 @admin.register(Issue)
+class IssueAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ColorLabel)
 class IssueAdmin(admin.ModelAdmin):
     pass

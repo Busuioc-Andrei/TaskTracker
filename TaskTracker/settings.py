@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django.forms",
     "bootstrap_modal_forms",
+    "colorfield",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -116,6 +117,8 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

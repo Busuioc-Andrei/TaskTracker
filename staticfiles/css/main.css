@@ -1,0 +1,49 @@
+body {
+    background-color: #eee;
+}
+
+.min-vh-60{
+    min-height:60vh;
+}
+
+.min-vh-50{
+    min-height:50vh;
+}
+
+.overflow-row{
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+
+}
+.overflow-row > .col-5 {
+    display: inline-block;
+    max-width: 250px;
+    vertical-align: top;
+}
+
+.card .btn{
+   z-index: 2;
+   position: relative;
+}
+
+.has-error {
+    color: red
+}
+
+.bg-light-gray{
+    background-color: #B1B1B1;
+}
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+    bottom: .5em;
+}
