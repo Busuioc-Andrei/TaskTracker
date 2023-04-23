@@ -2,8 +2,12 @@ import uuid
 from itertools import chain
 
 from colorfield.fields import ColorField
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User, AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from auth.models import User
 from django.utils.translation import gettext_lazy as _
 
 
@@ -114,3 +118,15 @@ class Comment(BaseModel):
     name = models.CharField(max_length=300, blank=True)
     description = models.CharField(max_length=5000, blank=False, null=False)
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
+    current_project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, editable=False)
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def update_profile_signal(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    instance.profile.save()

@@ -1,17 +1,18 @@
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView, BSModalUpdateView
 from bootstrap_modal_forms.utils import is_ajax
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import ListView, DetailView, TemplateView, RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning, FormMixin
 
 from commons.mixins import ModelNameMixin, DatetimePickerMixin
 from commons.utils import parse_jquery_sortable, order_columns, order_issues
 from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm
-from main.models import Issue, Board, Column, Comment
+from main.models import Issue, Board, Column, Comment, Project
 
 import warnings
 warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
@@ -87,6 +88,17 @@ def persistent(request):
         order_issues(sortable_data)
 
     return HttpResponse(status=204)
+
+
+class SetCurrentProject(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        project = Project.objects.get(pk=kwargs["pk"])
+        self.request.user.profile.current_project = project # noqa
+        self.request.user.save()
+        messages.success(self.request, "Updated current project")
+        self.url = self.request.META['HTTP_REFERER']
+        return super().get_redirect_url(*args, **kwargs)
 
 
 class BoardGetView(DetailView):
@@ -238,3 +250,8 @@ class IssueCommentCreateView(CustomCreateView):
             comment.issue = Issue.objects.get(pk=issue_id)
             comment.save()
         return HttpResponse(status=200)
+
+
+class CustomizeView(TemplateView):
+    model = Project
+    template_name = 'main/customize.html'

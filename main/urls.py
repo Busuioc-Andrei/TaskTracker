@@ -4,7 +4,7 @@ from .models import Issue, BaseModel, Project, Board, Column, Comment, ColorLabe
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, DeleteModalView, \
     IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView, persistent, \
     IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView, \
-    IssueCommentDeleteView
+    IssueCommentDeleteView, CustomizeView, SetCurrentProject
 
 generic_models = [Issue, Project, Board, Column, Comment, ColorLabel]
 
@@ -34,6 +34,9 @@ urlpatterns = [
     path('echo/', echo, name='echo'),
     path('empty/', empty, name='empty'),
     path('persistent/', persistent, name='persistent'),
+    path('set-current-project/<uuid:pk>/', SetCurrentProject.as_view(), name='set-current-project'),
+
+    path('customize/', CustomizeView.as_view(), name='customize'),
 
     path('board/add/', BoardCreateView.as_view(), name='board-add'),
     path('board/<uuid:pk>/', BoardPageView.as_view(), name='board-detail'),

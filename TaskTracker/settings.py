@@ -134,3 +134,5 @@ MESSAGE_TAGS = {
  }
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+AUTH_USER_MODEL = 'custom_auth.User'

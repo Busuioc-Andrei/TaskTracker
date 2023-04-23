@@ -4,7 +4,7 @@
     </a>
     <ul class="dropdown-menu">
         {% for project in project_list %}
-            <li><a class="dropdown-item" href="#">{{ project.name }}</a></li>
+            <li><a class="dropdown-item {% if project == current_project %} active {% endif %}" href="{% url 'set-current-project' project.id %}">{{ project.name }}</a></li>
         {% endfor %}
         {% if project_list %}
             <li><hr class="dropdown-divider"></li>
