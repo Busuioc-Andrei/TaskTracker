@@ -1,20 +1,27 @@
 import json
 
 from django import forms
-from django.db.models import DateTimeField
 from commons.widgets import XDSoftDateTimePickerInput
 from main.models import Column, Issue
 
 
-def add_datetime_widget(self, form):  # datetime widget for all datetime fields
-    date_fields = [field.name for field in self.model._meta.get_fields() if type(field) == DateTimeField]  # noqa
-    for date_field in date_fields:
-        if date_field in form.fields:
-            form.fields[date_field] = forms.DateTimeField(
-                input_formats=['%d/%m/%Y %H:%M'],
-                widget=XDSoftDateTimePickerInput(),
-                required=form.fields[date_field].required
-            )
+def add_datetime_widget(form):  # datetime widget for all datetime fields
+    for field_name, field in form.fields.items():
+        print(field)
+        if isinstance(field, forms.DateTimeField):
+            print(field)
+            form.fields[field_name].widget = XDSoftDateTimePickerInput()
+            form.fields[field_name].input_formats = ['%d/%m/%Y %H:%M']
+    return form
+
+
+def add_model_choice_filter(self, form):
+    user = self.request.user
+    if user:
+        for field_name, field in form.fields.items():
+            if isinstance(field, forms.ModelChoiceField):
+                visible_items = field.queryset.model.filter_visible_items(user)
+                form.fields[field_name].queryset = visible_items
     return form
 
 

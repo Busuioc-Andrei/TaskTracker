@@ -15,7 +15,7 @@ class SignupFormView(FormView):
 
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user)
+        login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(self.request, 'Sign up was successful.')
         return super().form_valid(form)
 
@@ -30,7 +30,7 @@ class LoginFormView(FormView):
         password = form.cleaned_data.get('password')
         user = authenticate(username=username, password=password)
         if user is not None:
-            login(self.request, user)
+            login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(self.request, f"You are now logged in as {username}.")
             return super().form_valid(form)
 

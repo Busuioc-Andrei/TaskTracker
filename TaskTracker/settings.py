@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.forms",
     "bootstrap_modal_forms",
     "colorfield",
+    "rules",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -136,3 +137,8 @@ MESSAGE_TAGS = {
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 AUTH_USER_MODEL = 'custom_auth.User'
+
+AUTHENTICATION_BACKENDS = [
+    'rules.permissions.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]

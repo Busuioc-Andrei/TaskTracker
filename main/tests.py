@@ -1,5 +1,7 @@
-from django.test import TestCase
+from django.test import Client, TestCase
+from django.urls import reverse
 
+from auth.models import User
 from main.forms import IssueForm
 from main.models import Issue, Project
 
@@ -79,3 +81,20 @@ class IssueFormTestCase(TestCase):
         form = IssueForm(data=epic_data)
 
         self.assertFormError(form, 'parent_issue', 'Epics cannot have a parent Issue.')
+
+
+class ProjectVisibilityTestCase(TestCase):  # this test should be modified when implementing project groups
+    def setUp(self) -> None:
+        self.user1 = User.objects.create_user(username='user1', password='testpass1')
+        self.user2 = User.objects.create_user(username='user2', password='testpass2')
+
+    def test_project_details_visible_only_to_creator(self):
+        client = Client()
+        client.force_login(self.user1)
+        project = Project.objects.create(name='test_project', created_by=self.user1)
+        response = client.get(reverse('project-detail', kwargs={'pk': project.id}))
+        self.assertEqual(response.status_code, 200)
+
+        client.force_login(self.user2)
+        response = client.get(reverse('project-detail', kwargs={'pk': project.id}))
+        self.assertEqual(response.status_code, 403)

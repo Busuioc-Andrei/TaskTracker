@@ -6,12 +6,22 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from rules.contrib.models import RulesModelMixin, RulesModelBase, RulesModel
 
 from auth.models import User
 from django.utils.translation import gettext_lazy as _
 
+from main import rules
 
-class BaseModel(models.Model):
+
+# class CustomManager(models.Manager):
+#     def filter_visible_items(self, user):
+#         queryset = self.get_queryset()
+#         filtered_queryset = [obj for obj in queryset if rules.is_project_creator(user, obj)]
+#         return filtered_queryset
+
+
+class BaseModel(RulesModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=300)
     description = models.CharField(max_length=5000, blank=True)
@@ -22,8 +32,7 @@ class BaseModel(models.Model):
     modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_modified', null=True,
                                     editable=False)
 
-    class Meta:
-        abstract = True
+    # objects = CustomManager()
 
     def __repr__(self):
         return str(self.to_dict())
@@ -44,9 +53,26 @@ class BaseModel(models.Model):
             data[field.name] = [val.id for val in field.value_from_object(self)]
         return data
 
+    @classmethod
+    def filter_visible_items(cls, user):
+        queryset = cls.objects.all()
+        rule_predicate = cls._meta.rules_permissions.get("view")
+        filtered_pks = [obj.pk for obj in queryset if rule_predicate(user, obj)]
+        filtered_queryset = queryset.filter(pk__in=filtered_pks)
+        return filtered_queryset
+
+    class Meta:
+        abstract = True
+
 
 class Project(BaseModel):
-    pass
+
+    class Meta:
+        rules_permissions = {
+            "view": rules.is_project_creator,
+            "change": rules.is_project_creator,
+            "delete": rules.is_project_creator,
+        }
 
 
 def first_project():
@@ -58,17 +84,36 @@ def first_project():
 class Board(BaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=first_project)
 
+    @property
+    def parent(self) -> Project:
+        return self.project
+
+    class Meta:
+        rules_permissions = rules.parent_rules_permissions
+
 
 class Column(BaseModel):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     order = models.IntegerField(null=True, editable=False, default=999)
 
+    @property
+    def parent(self) -> Board:
+        return self.board
+
     class Meta:
         ordering = ['order']
+        rules_permissions = rules.parent_rules_permissions
 
 
 class ColorLabel(BaseModel):
     color = ColorField(default='#0000FF')
+
+    class Meta:
+        rules_permissions = {
+            "view": rules.is_public,
+            "change": rules.is_public,
+            "delete": rules.is_public,
+        }
 
 
 default_issue_type_color_label_mapping = {
@@ -110,8 +155,13 @@ class Issue(BaseModel):
         self.add_default_color_label()
         super().save(*args, **kwargs)
 
+    @property
+    def parent(self) -> Project:
+        return self.project
+
     class Meta:
         ordering = ['order']
+        rules_permissions = rules.parent_rules_permissions
 
 
 class Comment(BaseModel):

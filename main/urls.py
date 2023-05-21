@@ -4,7 +4,7 @@ from .models import Issue, BaseModel, Project, Board, Column, Comment, ColorLabe
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, DeleteModalView, \
     IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView, persistent, \
     IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView, \
-    IssueCommentDeleteView, CustomizeView, SetCurrentProject
+    IssueCommentDeleteView, CustomizeView, SetCurrentProject, ProjectUpdateView
 
 generic_models = [Issue, Project, Board, Column, Comment, ColorLabel]
 
@@ -50,5 +50,7 @@ urlpatterns = [
     path('issue/<uuid:pk>/update/', IssueUpdateView.as_view(), name='issue-update'),
     path('issue/<uuid:pk>/comment/add/', IssueCommentCreateView.as_view(), name='issue-comment-add'),
     path('comment/<uuid:pk>/delete/', IssueCommentDeleteView.as_view(), name='issue-comment-delete'),
+
+    # path('project/<uuid:pk>/update/', ProjectUpdateView.as_view(), name='project-update'),
 
 ] + add_generic_paths(generic_models)  # generic_paths won't overwrite paths already defined

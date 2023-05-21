@@ -1,28 +1,34 @@
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView, BSModalUpdateView
 from bootstrap_modal_forms.utils import is_ajax
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect
-from django.template.loader import render_to_string
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView, RedirectView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning, FormMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning
+from rules.contrib.views import AutoPermissionRequiredMixin
 
-from commons.mixins import ModelNameMixin, DatetimePickerMixin
+from commons.mixins import ModelNameMixin, DatetimePickerMixin, ModelChoiceFilterMixin
 from commons.utils import parse_jquery_sortable, order_columns, order_issues
 from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm
 from main.models import Issue, Board, Column, Comment, Project
 
+
 import warnings
+
 warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
 
 
-class CustomListView(ListView, ModelNameMixin):
+class CustomListView(ModelNameMixin, ListView):
     template_name = 'generic/generic_list.html'
 
+    def get_queryset(self):
+        user = self.request.user
+        filtered_queryset = self.model.filter_visible_items(user)
+        return filtered_queryset
 
-class CustomCreateView(CreateView, ModelNameMixin, DatetimePickerMixin):
+
+class CustomCreateView(ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMixin, CreateView):
     template_name = 'generic/generic_form.html'
     fields = '__all__'
 
@@ -32,12 +38,16 @@ class CustomCreateView(CreateView, ModelNameMixin, DatetimePickerMixin):
         return super().form_valid(form)
 
 
-class CustomUpdateView(UpdateView, ModelNameMixin, DatetimePickerMixin):
+class CustomUpdateView(AutoPermissionRequiredMixin, ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMixin, UpdateView):
     template_name = 'generic/generic_edit_form.html'
     fields = '__all__'
 
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
 
-class CustomDetailView(DetailView, ModelNameMixin):
+
+class CustomDetailView(AutoPermissionRequiredMixin, ModelNameMixin, DetailView):
     template_name = 'generic/generic_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -47,7 +57,7 @@ class CustomDetailView(DetailView, ModelNameMixin):
         return context
 
 
-class CustomDeleteView(DeleteView, ModelNameMixin):
+class CustomDeleteView(AutoPermissionRequiredMixin, ModelNameMixin, DeleteView):
     template_name = 'generic/generic_confirm_delete.html'
 
     def get_success_url(self):
@@ -101,7 +111,7 @@ class SetCurrentProject(RedirectView):
         return super().get_redirect_url(*args, **kwargs)
 
 
-class BoardGetView(DetailView):
+class BoardGetView(CustomDetailView):
     template_name = "main/board.html"
     model = Board
 
@@ -111,7 +121,7 @@ class BoardGetView(DetailView):
         return context
 
 
-class BoardColumnPostView(CreateView):
+class BoardColumnPostView(CustomCreateView):
     template_name = "main/board.html"
     form_class = ColumnForm
     model = Column
@@ -255,3 +265,20 @@ class IssueCommentCreateView(CustomCreateView):
 class CustomizeView(TemplateView):
     model = Project
     template_name = 'main/customize.html'
+
+
+class ProjectUpdateView(CustomUpdateView):
+    model = Project
+    permission_required = 'main.change_project'
+
+    # def get_object(self, queryset=None):
+    #     print('a1')
+    #     return super().get_object(queryset)
+    #
+    # def has_permission(self):
+    #     print('a2')
+    #     return super().has_permission()
+    #
+    # def get_permission_object(self):
+    #     print('a3')
+    #     return super().get_permission_object()

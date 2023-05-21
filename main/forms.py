@@ -83,5 +83,4 @@ class CommentForm(ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('description', form='comment-form'),
-            # Submit('submit', 'Submit', css_class='button white'),
         )
