@@ -14,13 +14,6 @@ from django.utils.translation import gettext_lazy as _
 from main import rules
 
 
-# class CustomManager(models.Manager):
-#     def filter_visible_items(self, user):
-#         queryset = self.get_queryset()
-#         filtered_queryset = [obj for obj in queryset if rules.is_project_creator(user, obj)]
-#         return filtered_queryset
-
-
 class BaseModel(RulesModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=300)
@@ -31,8 +24,6 @@ class BaseModel(RulesModel):
     modified_at = models.DateTimeField(auto_now=True, null=True)
     modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_modified', null=True,
                                     editable=False)
-
-    # objects = CustomManager()
 
     def __repr__(self):
         return str(self.to_dict())
