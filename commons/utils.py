@@ -7,9 +7,7 @@ from main.models import Column, Issue
 
 def add_datetime_widget(form):  # datetime widget for all datetime fields
     for field_name, field in form.fields.items():
-        print(field)
         if isinstance(field, forms.DateTimeField):
-            print(field)
             form.fields[field_name].widget = XDSoftDateTimePickerInput()
             form.fields[field_name].input_formats = ['%d/%m/%Y %H:%M']
     return form
@@ -19,7 +17,7 @@ def add_model_choice_filter(self, form):
     user = self.request.user
     if user:
         for field_name, field in form.fields.items():
-            if isinstance(field, forms.ModelChoiceField):
+            if isinstance(field, forms.ModelChoiceField) and hasattr(field.queryset.model, 'filter_visible_items'):
                 visible_items = field.queryset.model.filter_visible_items(user)
                 form.fields[field_name].queryset = visible_items
     return form

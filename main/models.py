@@ -60,9 +60,9 @@ class Project(BaseModel):
 
     class Meta:
         rules_permissions = {
-            "view": rules.is_project_creator,
-            "change": rules.is_project_creator,
-            "delete": rules.is_project_creator,
+            "view": rules.is_part_of_permission_group,
+            "change": rules.is_part_of_permission_group,
+            "delete": rules.is_part_of_permission_group,
         }
 
 
@@ -70,6 +70,18 @@ def first_project():
     if Project:
         return Project.objects.first()
     return None
+
+
+class PermissionGroup(BaseModel):
+    project = models.OneToOneField(Project, on_delete=models.CASCADE, related_name='permission_group')
+    users = models.ManyToManyField(User)
+
+    class Meta:
+        rules_permissions = {
+            "view": rules.is_public,
+            "change": rules.is_public,
+            "delete": rules.is_public,
+        }
 
 
 class Board(BaseModel):
@@ -170,4 +182,11 @@ class Profile(models.Model):
 def update_profile_signal(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-    instance.profile.save()
+        instance.profile.save()
+
+
+@receiver(post_save, sender=Project)
+def create_permission_group(sender, instance, created, **kwargs):
+    if created:
+        PermissionGroup.objects.create(project=instance, created_by=instance.created_by, modified_by=instance.modified_by)
+        instance.permission_group.users.add(instance.created_by)

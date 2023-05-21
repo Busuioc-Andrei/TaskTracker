@@ -7,6 +7,11 @@ def is_project_creator(user, project):
 
 
 @rules.predicate
+def is_part_of_permission_group(user, project):
+    return user in project.permission_group.users.all()
+
+
+@rules.predicate
 def check_parent_view_permission(user, obj):
     parent = getattr(obj, 'parent', None)
     if parent:
@@ -40,6 +45,9 @@ parent_rules_permissions = {
     "change": check_parent_change_permission,
     "delete": check_parent_delete_permission,
 }
+
+# TO DO
+# invite screen
 
 
 # how it should work

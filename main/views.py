@@ -105,7 +105,7 @@ class SetCurrentProject(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         project = Project.objects.get(pk=kwargs["pk"])
         self.request.user.profile.current_project = project # noqa
-        self.request.user.save()
+        self.request.user.profile.save() # noqa
         messages.success(self.request, "Updated current project")
         self.url = self.request.META['HTTP_REFERER']
         return super().get_redirect_url(*args, **kwargs)
@@ -265,20 +265,3 @@ class IssueCommentCreateView(CustomCreateView):
 class CustomizeView(TemplateView):
     model = Project
     template_name = 'main/customize.html'
-
-
-class ProjectUpdateView(CustomUpdateView):
-    model = Project
-    permission_required = 'main.change_project'
-
-    # def get_object(self, queryset=None):
-    #     print('a1')
-    #     return super().get_object(queryset)
-    #
-    # def has_permission(self):
-    #     print('a2')
-    #     return super().has_permission()
-    #
-    # def get_permission_object(self):
-    #     print('a3')
-    #     return super().get_permission_object()
