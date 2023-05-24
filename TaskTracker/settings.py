@@ -142,3 +142,5 @@ AUTHENTICATION_BACKENDS = [
     'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+LOGIN_REDIRECT_URL = '/'

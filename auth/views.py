@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.views import LoginView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import RedirectView
 from django.views.generic.edit import FormView
@@ -20,23 +21,12 @@ class SignupFormView(FormView):
         return super().form_valid(form)
 
 
-class LoginFormView(FormView):
+class LoginFormView(LoginView):
     template_name = 'auth/login.html'
-    form_class = AuthenticationForm
-    success_url = '/'
 
     def form_valid(self, form):
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
-            messages.success(self.request, f"You are now logged in as {username}.")
-            return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, "Invalid username or password.")
-        return super().form_invalid(form)
+        messages.success(self.request, f"You are now logged in as {form.get_user()}.")
+        return super().form_valid(form)
 
 
 class LogoutView(SuccessMessageMixin, RedirectView):

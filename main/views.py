@@ -1,6 +1,7 @@
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView, BSModalUpdateView
 from bootstrap_modal_forms.utils import is_ajax
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
@@ -19,8 +20,9 @@ import warnings
 warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
 
 
-class CustomListView(ModelNameMixin, ListView):
+class CustomListView(LoginRequiredMixin, ModelNameMixin, ListView):
     template_name = 'generic/generic_list.html'
+    login_url = "login"
 
     def get_queryset(self):
         user = self.request.user
@@ -28,8 +30,9 @@ class CustomListView(ModelNameMixin, ListView):
         return filtered_queryset
 
 
-class CustomCreateView(ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMixin, CreateView):
+class CustomCreateView(LoginRequiredMixin, ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMixin, CreateView):
     template_name = 'generic/generic_form.html'
+    login_url = "login"
     fields = '__all__'
 
     def form_valid(self, form):
@@ -38,8 +41,9 @@ class CustomCreateView(ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMix
         return super().form_valid(form)
 
 
-class CustomUpdateView(AutoPermissionRequiredMixin, ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMixin, UpdateView):
+class CustomUpdateView(LoginRequiredMixin, AutoPermissionRequiredMixin, ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMixin, UpdateView):
     template_name = 'generic/generic_edit_form.html'
+    login_url = "login"
     fields = '__all__'
 
     def form_valid(self, form):
@@ -47,8 +51,9 @@ class CustomUpdateView(AutoPermissionRequiredMixin, ModelNameMixin, ModelChoiceF
         return super().form_valid(form)
 
 
-class CustomDetailView(AutoPermissionRequiredMixin, ModelNameMixin, DetailView):
+class CustomDetailView(LoginRequiredMixin, AutoPermissionRequiredMixin, ModelNameMixin, DetailView):
     template_name = 'generic/generic_detail.html'
+    login_url = "login"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -57,8 +62,9 @@ class CustomDetailView(AutoPermissionRequiredMixin, ModelNameMixin, DetailView):
         return context
 
 
-class CustomDeleteView(AutoPermissionRequiredMixin, ModelNameMixin, DeleteView):
+class CustomDeleteView(LoginRequiredMixin, AutoPermissionRequiredMixin, ModelNameMixin, DeleteView):
     template_name = 'generic/generic_confirm_delete.html'
+    login_url = "login"
 
     def get_success_url(self):
         return reverse_lazy(f'{self.model.__name__.lower()}-list')
@@ -262,6 +268,6 @@ class IssueCommentCreateView(CustomCreateView):
         return HttpResponse(status=200)
 
 
-class CustomizeView(TemplateView):
+class CustomizeView(LoginRequiredMixin, TemplateView):
     model = Project
     template_name = 'main/customize.html'
