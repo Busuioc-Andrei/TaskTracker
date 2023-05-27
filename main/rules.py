@@ -8,7 +8,7 @@ def is_project_creator(user, project):
 
 @rules.predicate
 def is_part_of_permission_group(user, project):
-    return user in project.permission_group.users.all()
+    return user in project.permission_group.members.all()
 
 
 @rules.predicate

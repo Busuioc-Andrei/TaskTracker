@@ -45,6 +45,7 @@
                     <ul class="navbar-nav ms-auto">
                         {% if user.is_authenticated %}
                             <li class="nav-item">
+                                {% include 'main/notifications_nav_dropdown.html' %}
                                 <a class="nav-link" href="{% url 'logout'%}">Logout</a>
                             </li>
                         {% else %}

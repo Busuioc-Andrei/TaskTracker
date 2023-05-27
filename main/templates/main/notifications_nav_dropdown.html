@@ -1,0 +1,28 @@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell"></i>
+        <span class="badge bg-danger">{{ invitation_list|length }}</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+        {% for invitation in invitation_list %}
+            <li>
+                <div class="dropdown-item invitation">
+                    <div class="invitation-content me-2">
+                        <h6>{{ invitation.sent_to.username }}</h6>
+                        <p>You have a new invitation from {{ invitation.created_by.username }} to join project {{ invitation.permission_group.project.name }}</p>
+                    </div>
+                    <div class="invitation-buttons">
+                        <form action="{% url 'invitation-accept' invitation.pk %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i></button>
+                        </form>
+                        <form action="{% url 'invitation-reject' invitation.pk %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</li>

@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from rules.contrib.models import RulesModelMixin, RulesModelBase, RulesModel
+from rules.contrib.models import RulesModel
 
 from auth.models import User
 from django.utils.translation import gettext_lazy as _
@@ -74,7 +74,11 @@ def first_project():
 
 class PermissionGroup(BaseModel):
     project = models.OneToOneField(Project, on_delete=models.CASCADE, related_name='permission_group')
-    users = models.ManyToManyField(User)
+    members = models.ManyToManyField(User)
+
+    def date_joined(self, member):
+        invitation = Invitation.objects.get(permission_group=self, sent_to=member)
+        return invitation.modified_at
 
     class Meta:
         rules_permissions = {
@@ -178,6 +182,20 @@ class Profile(models.Model):
     current_project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, editable=False)
 
 
+class Invitation(BaseModel):
+    sent_to = models.ForeignKey(User, on_delete=models.CASCADE)
+    permission_group = models.ForeignKey(PermissionGroup, on_delete=models.CASCADE)
+    accepted = models.BooleanField(null=True, editable=False)
+    rejected = models.BooleanField(null=True, editable=False)
+
+    class Meta:
+        rules_permissions = {
+            "view": rules.is_public,
+            "change": rules.is_public,
+            "delete": rules.is_public,
+        }
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def update_profile_signal(sender, instance, created, **kwargs):
     if created:
@@ -189,4 +207,4 @@ def update_profile_signal(sender, instance, created, **kwargs):
 def create_permission_group(sender, instance, created, **kwargs):
     if created:
         PermissionGroup.objects.create(project=instance, created_by=instance.created_by, modified_by=instance.modified_by)
-        instance.permission_group.users.add(instance.created_by)
+        instance.permission_group.members.add(instance.created_by)

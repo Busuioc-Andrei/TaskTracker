@@ -2,9 +2,11 @@ from bootstrap_modal_forms.forms import BSModalModelForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, HTML, Submit, Field, Row
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ModelForm, formset_factory
 
-from main.models import Column, Issue, Comment
+from auth.models import User
+from main.models import Column, Issue, Comment, Invitation
 
 
 class ColumnForm(ModelForm):
@@ -84,3 +86,19 @@ class CommentForm(ModelForm):
         self.helper.layout = Layout(
             Field('description', form='comment-form'),
         )
+
+
+class InvitationForm(ModelForm):
+    sent_to = forms.CharField()
+
+    class Meta:
+        model = Invitation
+        fields = ['sent_to']
+
+    def clean_sent_to(self):
+        username = self.cleaned_data['sent_to']
+        try:
+            user = User.objects.get(username=username)
+        except ObjectDoesNotExist:
+            raise forms.ValidationError("Invalid username.")
+        return user

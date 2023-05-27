@@ -4,7 +4,8 @@ from .models import Issue, BaseModel, Project, Board, Column, Comment, ColorLabe
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, DeleteModalView, \
     IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView, persistent, \
     IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView, \
-    IssueCommentDeleteView, CustomizeView, SetCurrentProject
+    IssueCommentDeleteView, CustomizeView, ProjectPageView, InviteCreateView, InvitationRejectView, \
+    InvitationAcceptView, RemoveMemberView
 
 generic_models = [Issue, Project, Board, Column, Comment, ColorLabel, PermissionGroup]
 
@@ -34,9 +35,11 @@ urlpatterns = [
     path('echo/', echo, name='echo'),
     path('empty/', empty, name='empty'),
     path('persistent/', persistent, name='persistent'),
-    path('set-current-project/<uuid:pk>/', SetCurrentProject.as_view(), name='set-current-project'),
 
     path('customize/', CustomizeView.as_view(), name='customize'),
+
+    path('project/<uuid:pk>/', ProjectPageView.as_view(), name='project-detail'),
+    path('project/<uuid:project_pk>/invite/add/', InviteCreateView.as_view(), name='invite-add'),
 
     path('board/add/', BoardCreateView.as_view(), name='board-add'),
     path('board/<uuid:pk>/', BoardPageView.as_view(), name='board-detail'),
@@ -50,5 +53,10 @@ urlpatterns = [
     path('issue/<uuid:pk>/update/', IssueUpdateView.as_view(), name='issue-update'),
     path('issue/<uuid:pk>/comment/add/', IssueCommentCreateView.as_view(), name='issue-comment-add'),
     path('comment/<uuid:pk>/delete/', IssueCommentDeleteView.as_view(), name='issue-comment-delete'),
+
+    path('invitation/<uuid:pk>/accept/', InvitationAcceptView.as_view(), name='invitation-accept'),
+    path('invitation/<uuid:pk>/reject/', InvitationRejectView.as_view(), name='invitation-reject'),
+
+    path('permissiongroup/<uuid:group_pk>/member/remove/<uuid:pk>/', RemoveMemberView.as_view(), name='remove-member'),
 
 ] + add_generic_paths(generic_models)  # generic_paths won't overwrite paths already defined

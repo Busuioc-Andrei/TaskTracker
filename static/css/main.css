@@ -2,6 +2,10 @@ body {
     background-color: #eee;
 }
 
+.hover-effect:hover {
+    background-color: #dcdcdc;
+  }
+
 .min-vh-60{
     min-height:60vh;
 }
@@ -33,6 +37,23 @@ body {
 
 .bg-light-gray{
     background-color: #B1B1B1;
+}
+
+.invitation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.invitation h6 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.invitation p {
+  margin: 0;
+  font-size: 12px;
 }
 
 table.dataTable thead .sorting:after,

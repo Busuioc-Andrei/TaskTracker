@@ -3,17 +3,18 @@ from bootstrap_modal_forms.utils import is_ajax
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView, RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning
 from rules.contrib.views import AutoPermissionRequiredMixin
 
+from auth.models import User
 from commons.mixins import ModelNameMixin, DatetimePickerMixin, ModelChoiceFilterMixin
 from commons.utils import parse_jquery_sortable, order_columns, order_issues
-from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm
-from main.models import Issue, Board, Column, Comment, Project
-
+from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm, InvitationForm
+from main.models import Issue, Board, Column, Comment, Project, Invitation, PermissionGroup
 
 import warnings
 
@@ -106,15 +107,15 @@ def persistent(request):
     return HttpResponse(status=204)
 
 
-class SetCurrentProject(RedirectView):
+class ProjectPageView(CustomDetailView):
+    template_name = "main/project.html"
+    model = Project
 
-    def get_redirect_url(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         project = Project.objects.get(pk=kwargs["pk"])
-        self.request.user.profile.current_project = project # noqa
-        self.request.user.profile.save() # noqa
-        messages.success(self.request, "Updated current project")
-        self.url = self.request.META['HTTP_REFERER']
-        return super().get_redirect_url(*args, **kwargs)
+        self.request.user.profile.current_project = project  # noqa
+        self.request.user.profile.save()  # noqa
+        return super().get(request, *args, **kwargs)
 
 
 class BoardGetView(CustomDetailView):
@@ -271,3 +272,60 @@ class IssueCommentCreateView(CustomCreateView):
 class CustomizeView(LoginRequiredMixin, TemplateView):
     model = Project
     template_name = 'main/customize.html'
+
+
+class InviteCreateView(CustomCreateView):
+    model = Invitation
+    form_class = InvitationForm
+    fields = None
+
+    def get_success_url(self):
+        project_id = self.kwargs['project_pk']
+        return reverse_lazy('project-detail', kwargs={'pk': project_id})
+
+    def form_valid(self, form):
+        project_id = self.kwargs['project_pk']
+        project = Project.objects.get(pk=project_id)
+        form.instance.permission_group = project.permission_group
+        return super().form_valid(form)
+
+
+class InvitationAcceptView(CustomUpdateView):
+    model = Invitation
+    fields = []
+
+    def form_valid(self, form):
+        form.instance.accepted = True
+        form.instance.rejected = False
+        form.instance.permission_group.members.add(form.instance.sent_to)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.request.META['HTTP_REFERER']
+
+
+class InvitationRejectView(CustomUpdateView):
+    model = Invitation
+    fields = []
+
+    def form_valid(self, form):
+        form.instance.accepted = False
+        form.instance.rejected = True
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.request.META['HTTP_REFERER']
+
+
+class RemoveMemberView(DeleteModalView):
+    model = User
+
+    def form_valid(self, form):
+        if not is_ajax(self.request.META):
+            print('test!!!!!')
+            member = self.get_object()
+            permission_group = PermissionGroup.objects.get(pk=self.kwargs['group_pk'])
+            permission_group.members.remove(member)
+            # return redirect('project-detail', pk=permission_group.project.pk)
+
+        return HttpResponseRedirect(super().get_success_url())
