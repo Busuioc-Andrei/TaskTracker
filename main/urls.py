@@ -7,7 +7,7 @@ from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpd
     IssueCommentDeleteView, CustomizeView, ProjectPageView, InviteCreateView, InvitationRejectView, \
     InvitationAcceptView, RemoveMemberView
 
-generic_models = [Issue, Project, Board, Column, Comment, ColorLabel, PermissionGroup]
+generic_models = [Issue, Project, Board, Column, Comment, ColorLabel]
 
 
 def add_generic_paths(model_types: [type[BaseModel]]):

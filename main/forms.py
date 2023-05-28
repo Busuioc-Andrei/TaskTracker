@@ -15,8 +15,8 @@ class ColumnForm(ModelForm):
         fields = ['name']
 
 
-def issue_validations(self, parent_issue, issue_id):
-    if issue_id == parent_issue.id:
+def issue_validations(self, parent_issue, issue_pk):
+    if issue_pk == parent_issue.pk:
         self.add_error(field='parent_issue', error="Issue cannot be it's own parent.")
 
 
@@ -31,13 +31,13 @@ def user_story_validations(self, issue_type, parent_issue):
             self.add_error(field='parent_issue', error="User Stories can only have Epics as parents.")
 
 
-def task_validations(self, issue_type, parent_issue, issue_id):
+def task_validations(self, issue_type, parent_issue, issue_pk):
     if issue_type == 'task':
         next_parent = parent_issue.parent_issue
         for _ in range(100):
             if not next_parent:
                 break
-            elif next_parent.id == issue_id:
+            elif next_parent.pk == issue_pk:
                 self.add_error(field='parent_issue', error="Circular reference detected.")
                 break
             next_parent = next_parent.parent_issue
@@ -52,14 +52,14 @@ class IssueForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        issue_id = self.instance.pk
+        issue_pk = self.instance.pk
         issue_type = cleaned_data.get("issue_type")
         parent_issue = cleaned_data.get("parent_issue")
         if issue_type and parent_issue:
-            issue_validations(self, parent_issue=parent_issue, issue_id=issue_id)
+            issue_validations(self, parent_issue=parent_issue, issue_pk=issue_pk)
             epic_validations(self, issue_type=issue_type)
             user_story_validations(self, issue_type=issue_type, parent_issue=parent_issue)
-            task_validations(self, issue_type=issue_type, parent_issue=parent_issue, issue_id=issue_id)
+            task_validations(self, issue_type=issue_type, parent_issue=parent_issue, issue_pk=issue_pk)
 
 
 class IssueModalForm(IssueForm, BSModalModelForm):
@@ -95,10 +95,34 @@ class InvitationForm(ModelForm):
         model = Invitation
         fields = ['sent_to']
 
+    def __init__(self, permission_group, *args, **kwargs):
+        self.permission_group = permission_group
+        super().__init__(*args, **kwargs)
+
     def clean_sent_to(self):
         username = self.cleaned_data['sent_to']
         try:
             user = User.objects.get(username=username)
         except ObjectDoesNotExist:
             raise forms.ValidationError("Invalid username.")
+
+        existing_pending_invitation = Invitation.objects.filter(
+            permission_group=self.permission_group,
+            sent_to=user,
+            accepted=None
+        ).first()
+
+        if existing_pending_invitation:
+            raise forms.ValidationError("There is already a pending invitation sent to this user.")
+
+        if self.permission_group.members.filter(pk=user.pk).exists():
+            raise forms.ValidationError("The user is already a member of the project.")
+
         return user
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.permission_group = self.permission_group
+        if commit:
+            instance.save()
+        return instance

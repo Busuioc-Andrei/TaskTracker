@@ -8,8 +8,8 @@
             <li>
                 <div class="dropdown-item invitation">
                     <div class="invitation-content me-2">
-                        <h6>{{ invitation.sent_to.username }}</h6>
-                        <p>You have a new invitation from {{ invitation.created_by.username }} to join project {{ invitation.permission_group.project.name }}</p>
+                        <h6> Join Project </h6>
+                        <p>You have a new invitation from <strong>{{ invitation.created_by.username }}</strong> to join project <strong>{{ invitation.permission_group.project.name }}</strong></p>
                     </div>
                     <div class="invitation-buttons">
                         <form action="{% url 'invitation-accept' invitation.pk %}" method="post" class="d-inline">
@@ -22,6 +22,10 @@
                         </form>
                     </div>
                 </div>
+            </li>
+        {% empty %}
+            <li>
+                <div class="px-3 py-1" style="white-space: nowrap;">No new notifications</div>
             </li>
         {% endfor %}
     </ul>

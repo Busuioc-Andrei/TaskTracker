@@ -57,7 +57,6 @@ class BaseModel(RulesModel):
 
 
 class Project(BaseModel):
-
     class Meta:
         rules_permissions = {
             "view": rules.is_part_of_permission_group,
@@ -79,13 +78,6 @@ class PermissionGroup(BaseModel):
     def date_joined(self, member):
         invitation = Invitation.objects.get(permission_group=self, sent_to=member)
         return invitation.modified_at
-
-    class Meta:
-        rules_permissions = {
-            "view": rules.is_public,
-            "change": rules.is_public,
-            "delete": rules.is_public,
-        }
 
 
 class Board(BaseModel):
@@ -186,14 +178,20 @@ class Invitation(BaseModel):
     sent_to = models.ForeignKey(User, on_delete=models.CASCADE)
     permission_group = models.ForeignKey(PermissionGroup, on_delete=models.CASCADE)
     accepted = models.BooleanField(null=True, editable=False)
-    rejected = models.BooleanField(null=True, editable=False)
 
     class Meta:
         rules_permissions = {
             "view": rules.is_public,
             "change": rules.is_public,
-            "delete": rules.is_public,
         }
+
+    @property
+    def rejected(self) -> bool:
+        return self.accepted is False
+
+    @property
+    def pending(self) -> bool:
+        return self.accepted is None
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -206,5 +204,6 @@ def update_profile_signal(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Project)
 def create_permission_group(sender, instance, created, **kwargs):
     if created:
-        PermissionGroup.objects.create(project=instance, created_by=instance.created_by, modified_by=instance.modified_by)
+        PermissionGroup.objects.create(project=instance, created_by=instance.created_by,
+                                       modified_by=instance.modified_by)
         instance.permission_group.members.add(instance.created_by)

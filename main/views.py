@@ -132,6 +132,7 @@ class BoardColumnPostView(CustomCreateView):
     template_name = "main/board.html"
     form_class = ColumnForm
     model = Column
+    fields = None
 
     def form_valid(self, form):
         form.instance.board_id = self.kwargs['pk']
@@ -283,10 +284,15 @@ class InviteCreateView(CustomCreateView):
         project_id = self.kwargs['project_pk']
         return reverse_lazy('project-detail', kwargs={'pk': project_id})
 
-    def form_valid(self, form):
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
         project_id = self.kwargs['project_pk']
         project = Project.objects.get(pk=project_id)
-        form.instance.permission_group = project.permission_group
+        kwargs['permission_group'] = project.permission_group
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Invitation sent successfully!')
         return super().form_valid(form)
 
 
@@ -296,12 +302,14 @@ class InvitationAcceptView(CustomUpdateView):
 
     def form_valid(self, form):
         form.instance.accepted = True
-        form.instance.rejected = False
         form.instance.permission_group.members.add(form.instance.sent_to)
+        messages.success(self.request, f'Successfully joined project {form.instance.permission_group.project.name}!')
         return super().form_valid(form)
 
     def get_success_url(self):
-        return self.request.META['HTTP_REFERER']
+        project = self.object.permission_group.project
+        return reverse_lazy('project-detail', kwargs={'pk': project.pk})
+        # return self.request.META['HTTP_REFERER']
 
 
 class InvitationRejectView(CustomUpdateView):
@@ -310,7 +318,6 @@ class InvitationRejectView(CustomUpdateView):
 
     def form_valid(self, form):
         form.instance.accepted = False
-        form.instance.rejected = True
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -322,10 +329,8 @@ class RemoveMemberView(DeleteModalView):
 
     def form_valid(self, form):
         if not is_ajax(self.request.META):
-            print('test!!!!!')
             member = self.get_object()
             permission_group = PermissionGroup.objects.get(pk=self.kwargs['group_pk'])
             permission_group.members.remove(member)
-            # return redirect('project-detail', pk=permission_group.project.pk)
 
         return HttpResponseRedirect(super().get_success_url())

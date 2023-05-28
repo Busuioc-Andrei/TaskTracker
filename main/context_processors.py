@@ -10,5 +10,5 @@ def navbar(request):
         "project_list": Project.filter_visible_items(user),
         "board_list": Board.objects.filter(project=current_project),
         "current_project": current_project,
-        "invitation_list": Invitation.objects.filter(accepted=None, rejected=None)#filter(sent_to=request.user)
+        "invitation_list": Invitation.objects.filter(sent_to=request.user, accepted=None)
     }
