@@ -37,15 +37,13 @@
                         {% if user.is_authenticated %}
                             {% include 'main/project_nav_dropdown.html' %}
                             {% include 'main/board_nav_dropdown.html' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'customize'%}">Customize</a>
-                            </li>
                         {% endif %}
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         {% if user.is_authenticated %}
                             <li class="nav-item">
                                 {% include 'main/notifications_nav_dropdown.html' %}
+                                {% include 'main/settings_nav_dropdown.html' %}
                                 <a class="nav-link" href="{% url 'logout'%}">Logout</a>
                             </li>
                         {% else %}

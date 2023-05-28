@@ -1,7 +1,9 @@
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" role="button" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-bell"></i>
-        <span class="badge bg-danger">{{ invitation_list|length }}</span>
+        {% if invitation_list|length > 0 %}
+            <span class="badge bg-danger">{{ invitation_list|length }}</span>
+        {% endif %}
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
         {% for invitation in invitation_list %}
