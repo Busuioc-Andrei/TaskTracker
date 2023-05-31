@@ -5,7 +5,7 @@ from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpd
     IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView, persistent, \
     IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView, \
     IssueCommentDeleteView, CustomizeView, ProjectPageView, InviteCreateView, InvitationRejectView, \
-    InvitationAcceptView, RemoveMemberView
+    InvitationAcceptView, RemoveMemberView, ProfileDetailView, ProfileUpdateView
 
 generic_models = [Issue, Project, Board, Column, Comment, ColorLabel]
 
@@ -37,6 +37,9 @@ urlpatterns = [
     path('persistent/', persistent, name='persistent'),
 
     path('customize/', CustomizeView.as_view(), name='customize'),
+    path('profile/<uuid:pk>/', ProfileDetailView.as_view(), name='profile-detail'),
+    path('profile/<uuid:pk>/update/', ProfileUpdateView.as_view(), name='profile-update'),
+
 
     path('project/<uuid:pk>/', ProjectPageView.as_view(), name='project-detail'),
     path('project/<uuid:project_pk>/invite/add/', InviteCreateView.as_view(), name='invite-add'),

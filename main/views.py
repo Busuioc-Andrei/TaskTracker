@@ -14,7 +14,7 @@ from auth.models import User
 from commons.mixins import ModelNameMixin, DatetimePickerMixin, ModelChoiceFilterMixin
 from commons.utils import parse_jquery_sortable, order_columns, order_issues
 from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm, InvitationForm
-from main.models import Issue, Board, Column, Comment, Project, Invitation, PermissionGroup
+from main.models import Issue, Board, Column, Comment, Project, Invitation, PermissionGroup, Profile
 
 import warnings
 
@@ -309,7 +309,6 @@ class InvitationAcceptView(CustomUpdateView):
     def get_success_url(self):
         project = self.object.permission_group.project
         return reverse_lazy('project-detail', kwargs={'pk': project.pk})
-        # return self.request.META['HTTP_REFERER']
 
 
 class InvitationRejectView(CustomUpdateView):
@@ -334,3 +333,16 @@ class RemoveMemberView(DeleteModalView):
             permission_group.members.remove(member)
 
         return HttpResponseRedirect(super().get_success_url())
+
+
+class ProfileDetailView(CustomDetailView):
+    model = Profile
+    template_name = 'main/profile_detail.html'
+
+
+class ProfileUpdateView(CustomUpdateView):
+    model = Profile
+    template_name = 'generic/generic_edit_form.html'
+
+    def get_success_url(self):
+        return self.request.META['HTTP_REFERER']

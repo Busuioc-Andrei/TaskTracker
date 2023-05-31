@@ -3,9 +3,9 @@
         <i class="bi bi-gear"></i>
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
-        <li><a class="dropdown-item" href="#"> Profile </a></li>
+        <li><a class="dropdown-item" href="{% url 'profile-detail' user.pk%}"> Profile </a></li>
         <li><a class="dropdown-item" href="#"> Change password </a></li>
-        <li><a class="dropdown-item" href="#"> Modify account details </a></li>
+        <li><a class="dropdown-item" href="{% url 'profile-update' user.pk%}"> Modify account details </a></li>
         <li><a class="dropdown-item" href="{% url 'customize'%}">Customize </a></li>
     </ul>
 </li>

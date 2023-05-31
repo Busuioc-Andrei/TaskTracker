@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include 'back_button.html' %}
+    <div class="profile-container">
+        <div class="profile-picture">
+            {% if user.profile.profile_picture %}
+                <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture">
+{#            {% else %}#}
+{#                <img src="{% static 'path/to/default/profile_picture.jpg' %}" alt="Profile Picture">#}
+            {% endif %}
+        </div>
+        <div class="profile-details">
+            <h1>{{ user.full_name }}</h1>
+            <p class="username">{{ user.username }}</p>
+            <p class="email">{{ user.email }}</p>
+        </div>
+    </div>
+{% endblock %}

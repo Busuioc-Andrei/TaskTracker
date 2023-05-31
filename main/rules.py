@@ -40,6 +40,11 @@ def is_public(user, obj):
     return True
 
 
+@rules.predicate
+def is_own_profile(user, profile):
+    return user == profile.user
+
+
 parent_rules_permissions = {
     "view": check_parent_view_permission,
     "change": check_parent_change_permission,

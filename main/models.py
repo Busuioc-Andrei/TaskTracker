@@ -169,9 +169,27 @@ class Comment(BaseModel):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
 
 
-class Profile(models.Model):
+class Profile(RulesModel):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     current_project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, editable=False)
+    bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+
+    def to_dict(self):
+        opts = self._meta
+        data = {}
+        for field in chain(opts.concrete_fields, opts.private_fields):
+            data[field.name] = field.value_from_object(self)
+        for field in opts.many_to_many:
+            data[field.name] = [val.id for val in field.value_from_object(self)]
+        return data
+
+    class Meta:
+        rules_permissions = {
+            "view": rules.is_own_profile,
+            "change": rules.is_own_profile,
+            "delete": rules.is_own_profile,
+        }
 
 
 class Invitation(BaseModel):
