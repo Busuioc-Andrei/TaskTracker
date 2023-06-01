@@ -168,6 +168,13 @@ class Comment(BaseModel):
     description = models.CharField(max_length=5000, blank=False, null=False)
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
 
+    @property
+    def parent(self) -> Issue:
+        return self.issue
+
+    class Meta:
+        rules_permissions = rules.parent_rules_permissions
+
 
 class Profile(RulesModel):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
