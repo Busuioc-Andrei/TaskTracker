@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% include 'back_button.html' %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    <h4> Modify account details </h4>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        {{ form.media }}
+{#        {% if form.fields.profile_picture.initial %}#}
+{#            <div class="form-group">#}
+{#                <img src="{{ form.fields.profile_picture.initial.url }}" class="img-preview">#}
+{#            </div>#}
+{#        {% endif %}#}
+        {{ form|crispy }}
+        <input type="submit" value="Save" class="btn btn-primary">
+    </form>
+{% endblock %}

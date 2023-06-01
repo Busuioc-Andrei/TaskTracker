@@ -13,7 +13,8 @@ from rules.contrib.views import AutoPermissionRequiredMixin
 from auth.models import User
 from commons.mixins import ModelNameMixin, DatetimePickerMixin, ModelChoiceFilterMixin
 from commons.utils import parse_jquery_sortable, order_columns, order_issues
-from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm, InvitationForm
+from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm, InvitationForm, \
+    UserAndProfileForm
 from main.models import Issue, Board, Column, Comment, Project, Invitation, PermissionGroup, Profile
 
 import warnings
@@ -341,8 +342,10 @@ class ProfileDetailView(CustomDetailView):
 
 
 class ProfileUpdateView(CustomUpdateView):
-    model = Profile
-    template_name = 'generic/generic_edit_form.html'
+    model = User
+    form_class = UserAndProfileForm
+    fields = None
+    template_name = 'main/profile_edit_form.html'
 
     def get_success_url(self):
-        return self.request.META['HTTP_REFERER']
+        return reverse_lazy('profile-detail', kwargs={'pk': self.kwargs['pk']})

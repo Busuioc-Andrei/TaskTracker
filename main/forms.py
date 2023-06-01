@@ -3,10 +3,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, HTML, Submit, Field, Row
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
-from django.forms import ModelForm, formset_factory
+from django.forms import ModelForm
 
 from auth.models import User
-from main.models import Column, Issue, Comment, Invitation
+from main.models import Column, Issue, Comment, Invitation, Profile
 
 
 class ColumnForm(ModelForm):
@@ -126,3 +126,44 @@ class InvitationForm(ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class UserAndProfileForm(ModelForm):
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        profile_fields = ['profile_picture', 'bio']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_profile_fields()
+
+    def add_profile_fields(self):
+        profile_fields = self.Meta.profile_fields
+        profile_model = Profile
+        for field_name in profile_fields:
+            field = profile_model._meta.get_field(field_name)
+            form_field = field.formfield(required=False)
+            if self.instance.profile:
+                form_field.initial = getattr(self.instance.profile, field.name)
+            self.fields[field.name] = form_field
+
+    def clean_profile_picture(self):
+        profile_picture = self.cleaned_data['profile_picture']
+        if profile_picture is False:
+            return None
+        return profile_picture
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        profile, _ = Profile.objects.get_or_create(user=user)
+        profile_fields = self.Meta.profile_fields
+        profile_model = Profile
+        for field_name in profile_fields:
+            field = profile_model._meta.get_field(field_name)
+            setattr(profile, field.name, self.cleaned_data[field.name])
+        profile.save()
+        user.save()
+        return user
+

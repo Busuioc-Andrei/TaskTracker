@@ -1,19 +1,31 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-    {% include 'back_button.html' %}
-    <div class="profile-container">
-        <div class="profile-picture">
-            {% if user.profile.profile_picture %}
-                <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture">
-{#            {% else %}#}
-{#                <img src="{% static 'path/to/default/profile_picture.jpg' %}" alt="Profile Picture">#}
-            {% endif %}
-        </div>
-        <div class="profile-details">
-            <h1>{{ user.full_name }}</h1>
-            <p class="username">{{ user.username }}</p>
-            <p class="email">{{ user.email }}</p>
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+    <div class="container profile">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="profile-card">
+                {% include 'back_button_no_text.html' %}
+                    <div class="profile-picture">
+                        {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture">
+                        {% else %}
+                            <img src="{% static 'images/profile.jpg' %}" alt="Default Profile Picture">
+                        {% endif %}
+                    </div>
+                    <div class="profile-details">
+                        {% include 'main/profile_field.html' with label='Username' value=user.username %}
+                        {% include 'main/profile_field.html' with label='First name' value=user.first_name %}
+                        {% include 'main/profile_field.html' with label='Last name' value=user.last_name %}
+                        {% include 'main/profile_field.html' with label='Email address' value=user.email %}
+                        {% include 'main/profile_field.html' with label='Bio' value=user.profile.bio %}
+                        {% include 'main/profile_field.html' with label='Current Project' value=user.profile.current_project %}
+                        <a href="{% url 'profile-update' profile.pk %}" class="btn btn-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
