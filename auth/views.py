@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 from django.views.generic.edit import FormView
 from django.contrib.auth.forms import AuthenticationForm
@@ -36,3 +37,11 @@ class LogoutView(SuccessMessageMixin, RedirectView):
         logout(self.request)
         messages.success(self.request, "You have successfully logged out.")
         return super().get_redirect_url(*args, **kwargs)
+
+
+class ChangePasswordView(PasswordChangeView):
+    template_name = 'auth/change_password.html'
+
+    def get_success_url(self):
+        messages.success(self.request, "Password changed successfully.")
+        return '/'
