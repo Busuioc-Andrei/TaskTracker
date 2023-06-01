@@ -24,7 +24,6 @@ warnings.filterwarnings(action='ignore', category=DeleteViewCustomDeleteWarning)
 
 class CustomListView(LoginRequiredMixin, ModelNameMixin, ListView):
     template_name = 'generic/generic_list.html'
-    login_url = "login"
 
     def get_queryset(self):
         user = self.request.user
@@ -34,7 +33,6 @@ class CustomListView(LoginRequiredMixin, ModelNameMixin, ListView):
 
 class CustomCreateView(LoginRequiredMixin, ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMixin, CreateView):
     template_name = 'generic/generic_form.html'
-    login_url = "login"
     fields = '__all__'
 
     def form_valid(self, form):
@@ -45,7 +43,6 @@ class CustomCreateView(LoginRequiredMixin, ModelNameMixin, ModelChoiceFilterMixi
 
 class CustomUpdateView(LoginRequiredMixin, AutoPermissionRequiredMixin, ModelNameMixin, ModelChoiceFilterMixin, DatetimePickerMixin, UpdateView):
     template_name = 'generic/generic_edit_form.html'
-    login_url = "login"
     fields = '__all__'
 
     def form_valid(self, form):
@@ -55,7 +52,6 @@ class CustomUpdateView(LoginRequiredMixin, AutoPermissionRequiredMixin, ModelNam
 
 class CustomDetailView(LoginRequiredMixin, AutoPermissionRequiredMixin, ModelNameMixin, DetailView):
     template_name = 'generic/generic_detail.html'
-    login_url = "login"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -66,7 +62,6 @@ class CustomDetailView(LoginRequiredMixin, AutoPermissionRequiredMixin, ModelNam
 
 class CustomDeleteView(LoginRequiredMixin, AutoPermissionRequiredMixin, ModelNameMixin, DeleteView):
     template_name = 'generic/generic_confirm_delete.html'
-    login_url = "login"
 
     def get_success_url(self):
         return reverse_lazy(f'{self.model.__name__.lower()}-list')

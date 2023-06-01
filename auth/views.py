@@ -41,6 +41,7 @@ class LogoutView(SuccessMessageMixin, RedirectView):
 
 class ChangePasswordView(PasswordChangeView):
     template_name = 'auth/change_password.html'
+    login_url = "login"
 
     def get_success_url(self):
         messages.success(self.request, "Password changed successfully.")
