@@ -1,9 +1,18 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-    {% include 'back_button.html' %}
-    <h4>{{ model_verbose_name }}</h4>
-    {% for key, value in data.items %}
-        <p>{{ key|capfirst }}: {{ value|default_if_none:'' }}</p>
-    {% endfor %}
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+        <div class="row">
+            <div class="col-md-6">
+            {% include 'back_button.html' %}
+                <div class="profile-details">
+                    {% for key, value in data.items %}
+                        {% if key != 'profile_picture' %}
+                            {% include 'main/profile_field.html' with label=key|capfirst value=value|default_if_none:'' %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 {% endblock %}
