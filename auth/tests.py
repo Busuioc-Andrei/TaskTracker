@@ -11,7 +11,6 @@ class ChangePasswordTest(TestCase):
         self.client.force_login(self.user1)
 
     def test_change_password(self):
-
         response = self.client.post(reverse('change-password'), {
             'old_password': 'testpass1',
             'new_password1': 'new_password',
@@ -19,3 +18,11 @@ class ChangePasswordTest(TestCase):
         }, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Password changed successfully.')
+
+    def test_reset_password(self):
+        response = self.client.get(reverse('reset-password'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Password Reset')
+
+        response = self.client.post(reverse('reset-password'), {'email': 'user1@example.com'})
+        self.assertEqual(response.status_code, 302)
