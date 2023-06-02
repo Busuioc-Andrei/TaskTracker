@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "bootstrap_modal_forms",
     "colorfield",
     "rules",
+    "mailer",
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -148,3 +149,12 @@ LOGIN_REDIRECT_URL = '/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+EMAIL_BACKEND = 'mailer.backend.DbBackend'
+
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tasktracker1@outlook.com'
+EMAIL_HOST_PASSWORD = '1c44a2e7-a9fa-4f6f-9a96-001f62a86805'
+DEFAULT_FROM_EMAIL = 'tasktracker1@outlook.com'

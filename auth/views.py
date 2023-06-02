@@ -1,8 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView
+from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
+    PasswordResetDoneView, PasswordResetConfirmView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse_lazy, reverse
 from django.views.generic import RedirectView
 from django.views.generic.edit import FormView
 from django.contrib.auth.forms import AuthenticationForm
@@ -46,3 +48,22 @@ class ChangePasswordView(PasswordChangeView):
     def get_success_url(self):
         messages.success(self.request, "Password changed successfully.")
         return '/'
+
+
+class ResetPasswordView(PasswordResetView):
+    template_name = 'auth/reset_password.html'
+    email_template_name = 'auth/reset_password_email.html'
+    success_url = reverse_lazy('reset-password-done')
+
+
+class ResetPasswordDoneView(PasswordResetDoneView):
+    template_name = 'auth/reset_password_done.html'
+
+
+class ResetPasswordConfirmView(PasswordResetConfirmView):
+    template_name = 'auth/reset_password_confirm.html'
+    success_url = reverse_lazy('reset-password-complete')
+
+    def get_success_url(self):
+        messages.success(self.request, "Password changed successfully, please login.")
+        return reverse('login')

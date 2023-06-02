@@ -1,13 +1,14 @@
 from django.core import mail
+from django.core.mail import send_mail
 from django.test import TestCase, Client
 from django.urls import reverse
 
 from auth.models import User
 
 
-class ChangePasswordTest(TestCase):
+class PasswordTestCase(TestCase):
     def setUp(self) -> None:
-        self.user1 = User.objects.create_user(username='user1', password='testpass1')
+        self.user1 = User.objects.create_user(username='user1', password='testpass1', email='user1@example.com')
         self.client = Client()
         self.client.force_login(self.user1)
 
@@ -29,5 +30,18 @@ class ChangePasswordTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Password Reset')
+        self.assertIn('Password reset', mail.outbox[0].subject)
         self.assertIn('user1@example.com', mail.outbox[0].to)
+
+
+class EmailTestCase(TestCase):
+
+    def test_send_test_email(self):
+        send_mail(
+            'Subject',
+            'Body',
+            'from@example.com',
+            ['to@example.com'],
+            fail_silently=False,
+        )
+        self.assertEqual(len(mail.outbox), 1)
