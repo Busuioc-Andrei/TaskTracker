@@ -130,6 +130,11 @@ class Issue(BaseModel):
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     order = models.IntegerField(null=True, editable=False)
+    in_backlog = models.BooleanField(default=True, editable=False)
+
+    # def save(self, *args, **kwargs):
+    #     self.in_backlog = not bool(self.column)
+    #     super().save(*args, **kwargs)
 
     class IssueType(models.TextChoices):
         EPIC = 'epic', _('Epic')
@@ -151,6 +156,7 @@ class Issue(BaseModel):
                 self.color_label = color_label
 
     def save(self, *args, **kwargs):
+        self.in_backlog = not bool(self.column)
         self.add_default_color_label()
         super().save(*args, **kwargs)
 
@@ -217,6 +223,14 @@ class Invitation(BaseModel):
     @property
     def pending(self) -> bool:
         return self.accepted is None
+
+
+class Sprint(BaseModel):
+    start_date = models.DateField()
+    end_date = models.DateField()
+    estimated_start_date = models.DateField()
+    estimated_end_date = models.DateField()
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

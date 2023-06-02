@@ -11,3 +11,8 @@ def date_joined(permission_group, member):
         return invitation.modified_at
     else:
         return permission_group.created_at
+
+
+@register.filter
+def in_backlog(issues):
+    return issues.filter(in_backlog=True)
