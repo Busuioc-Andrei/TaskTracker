@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from django.contrib import messages
+import logging
+from logging.handlers import TimedRotatingFileHandler, RotatingFileHandler
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -162,3 +164,25 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tasktracker1@outlook.com'
 EMAIL_HOST_PASSWORD = '1c44a2e7-a9fa-4f6f-9a96-001f62a86805'
 DEFAULT_FROM_EMAIL = 'tasktracker1@outlook.com'
+
+LOGGING_CONFIG = None
+LOG_DIR = BASE_DIR / 'logs/'
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[
+        TimedRotatingFileHandler(
+            LOG_DIR / 'logfile.log',
+            when='midnight',
+            interval=1,
+            backupCount=5,
+        ),
+        # RotatingFileHandler(
+        #     LOG_DIR / 'logfile.log',
+        #     maxBytes=5 * 1024 * 1024,  # 1MB
+        #     backupCount=5,
+        # ),
+        logging.StreamHandler(),
+    ],
+)
