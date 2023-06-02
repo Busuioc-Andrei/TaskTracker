@@ -1,3 +1,4 @@
+from django.core import mail
 from django.test import TestCase, Client
 from django.urls import reverse
 
@@ -26,3 +27,7 @@ class ChangePasswordTest(TestCase):
 
         response = self.client.post(reverse('reset-password'), {'email': 'user1@example.com'})
         self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Password Reset')
+        self.assertIn('user1@example.com', mail.outbox[0].to)
