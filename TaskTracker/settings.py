@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from django.contrib import messages
@@ -167,6 +168,9 @@ DEFAULT_FROM_EMAIL = 'tasktracker1@outlook.com'
 
 LOGGING_CONFIG = None
 LOG_DIR = BASE_DIR / 'logs/'
+
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
 
 logging.basicConfig(
     level=logging.INFO,
