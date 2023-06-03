@@ -3,10 +3,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, HTML, Submit, Field, Row
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 from django.forms import ModelForm
 
 from auth.models import User
-from main.models import Column, Issue, Comment, Invitation, Profile
+from main.models import Column, Issue, Comment, Invitation, Profile, Sprint
 
 
 class ColumnForm(ModelForm):
@@ -64,6 +65,13 @@ class IssueForm(ModelForm):
 
 class IssueModalForm(IssueForm, BSModalModelForm):
     pass
+    # def save(self, commit=True):
+    #     instance = super().save(commit=False)
+    #     # instance.index = self.initial['index']
+    #     # instance.project = self.initial['project']
+    #     if commit:
+    #         instance.save()
+    #     return instance
 
 
 class IssueModalUpdateForm(IssueForm, BSModalModelForm):
@@ -167,3 +175,26 @@ class UserAndProfileForm(ModelForm):
         user.save()
         return user
 
+
+class SprintModalForm(BSModalModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        project = self.initial['project']
+        if not self.initial.get('name'):
+            max_index = Sprint.objects.filter(project=project).aggregate(Max('index'))['index__max']
+            next_index = max_index + 1 if max_index is not None else 1
+            self.initial['index'] = next_index
+            self.initial['name'] = f"Sprint {next_index}"
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.index = self.initial['index']
+        instance.project = self.initial['project']
+        if commit:
+            instance.save()
+        return instance
+
+    class Meta:
+        model = Sprint
+        fields = '__all__'

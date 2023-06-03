@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.timezone import now
 from rules.contrib.models import RulesModel
 
 from auth.models import User
@@ -127,14 +128,10 @@ class Issue(BaseModel):
     column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True, editable=False)
     parent_issue = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     color_label = models.ForeignKey(ColorLabel, on_delete=models.SET_NULL, null=True, blank=True)
-    start_date = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateTimeField(default=now, null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     order = models.IntegerField(null=True, editable=False)
     in_backlog = models.BooleanField(default=True, editable=False)
-
-    # def save(self, *args, **kwargs):
-    #     self.in_backlog = not bool(self.column)
-    #     super().save(*args, **kwargs)
 
     class IssueType(models.TextChoices):
         EPIC = 'epic', _('Epic')
@@ -226,11 +223,12 @@ class Invitation(BaseModel):
 
 
 class Sprint(BaseModel):
-    start_date = models.DateField()
-    end_date = models.DateField()
-    estimated_start_date = models.DateField()
-    estimated_end_date = models.DateField()
-    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    start_date = models.DateTimeField(default=now)
+    end_date = models.DateTimeField(null=True, blank=True)
+    estimated_start_date = models.DateTimeField(default=now)
+    estimated_end_date = models.DateTimeField(null=True, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, editable=False)
+    index = models.PositiveIntegerField(default=1, editable=False)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

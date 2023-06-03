@@ -7,7 +7,16 @@
     <div class="container mb-5">
         <div class="d-flex justify-content-between">
             <h2> Boards </h2>
-            <h2><u> {{ project.name }} </u></h2>
+            <div class="row">
+                <div class="col-auto">
+                    <button class="modal-link-m btn btn-primary" type="button" data-form-url="{% url 'sprint-add' project.pk %}">
+                        Create Sprint
+                    </button>
+                </div>
+                <div class="col">
+                    <h2><u> {{ project.name }} </u></h2>
+                </div>
+            </div>
         </div>
 
         <div class="row row-cols-5 g-3">
@@ -18,7 +27,7 @@
                             <h5 class="card-title"> {{ board.name }} </h5>
                             <p class="card-text"> {{ board.description|default:"&nbsp" }} </p>
                         </div>
-                        <a class="stretched-link" href="{% url 'board-detail' board.id %}" role="button"></a>
+                        <a class="stretched-link" href="{% url 'board-detail' board.pk %}" role="button"></a>
                     </div>
                 </div>
             {% endfor %}
@@ -26,7 +35,7 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="container mb-5">
         <div class="table-responsive">
             <h2> Backlog </h2>
             <table class="datatable table table-striped table-bordered table-hover">
@@ -48,14 +57,14 @@
                         <td>{{ issue.description }}</td>
                         <td>{{ issue.created_by }}</td>
                         <td>
-                            <a class="btn btn-primary mr-4" href="{% url 'issue-update' issue.id %}">
+                            <a class="btn btn-primary mr-4" href="{% url 'issue-update' issue.pk %}">
                                 Edit
                             </a>
                             <a class="btn btn-secondary" href="{{ issue.get_absolute_url }}">
                                 Details
                             </a>
                             <button class="modal-link-m btn btn-danger" type="button"
-                                    data-form-url="{% url 'issue-delete' issue.id %}">
+                                    data-form-url="{% url 'issue-delete' issue.pk %}">
                                 Delete
                             </button>
                         </td>
@@ -97,7 +106,7 @@
                         <td>{{ project.permission_group|date_joined:member }}</td>
                         <td>
                             <button class="modal-link-m btn btn-danger" type="button"
-                                    data-form-url="{% url 'remove-member' project.permission_group.id member.id %}">
+                                    data-form-url="{% url 'remove-member' project.permission_group.pk member.pk %}">
                                 Remove
                             </button>
                         </td>
@@ -106,6 +115,6 @@
                 </tbody>
             </table>
         </div>
-        <p><a class="btn btn-primary" href="{% url 'invite-add' project.id %}"> Invite </a></p>
+        <p><a class="btn btn-primary" href="{% url 'invite-add' project.pk %}"> Invite </a></p>
     </div>
 {% endblock %}

@@ -14,8 +14,8 @@ from auth.models import User
 from commons.mixins import ModelNameMixin, DatetimePickerMixin, ModelChoiceFilterMixin
 from commons.utils import parse_jquery_sortable, order_columns, order_issues
 from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm, InvitationForm, \
-    UserAndProfileForm
-from main.models import Issue, Board, Column, Comment, Project, Invitation, PermissionGroup, Profile
+    UserAndProfileForm, SprintModalForm
+from main.models import Issue, Board, Column, Comment, Project, Invitation, PermissionGroup, Profile, Sprint
 
 import warnings
 
@@ -186,9 +186,9 @@ class ColumnIssueCreateModalView(CustomCreateView, BSModalCreateView):
     def form_valid(self, form):
         if not is_ajax(self.request.META):
             # add reference to column issue was created in
-            column_id = self.kwargs['column_pk']
+            column_pk = self.kwargs['column_pk']
             issue = form.save(commit=False)
-            issue.column = Column.objects.get(pk=column_id)
+            issue.column = Column.objects.get(pk=column_pk)
             issue.save()
         return super().form_valid(form)
 
@@ -228,8 +228,8 @@ class BoardIssueUpdateModalView(CustomUpdateView, BSModalUpdateView):
         context = super().get_context_data(**kwargs)
         context['comment_form'] = CommentForm(prefix='comment')
 
-        issue_id = self.kwargs['pk']
-        issue = Issue.objects.get(pk=issue_id)
+        issue_pk = self.kwargs['pk']
+        issue = Issue.objects.get(pk=issue_pk)
 
         context['comments'] = issue.comment_set.all()
         return context
@@ -260,8 +260,8 @@ class IssueCommentCreateView(CustomCreateView):
             comment.created_by = self.request.user
             comment.modified_by = self.request.user
 
-            issue_id = self.kwargs['pk']
-            comment.issue = Issue.objects.get(pk=issue_id)
+            issue_pk = self.kwargs['pk']
+            comment.issue = Issue.objects.get(pk=issue_pk)
             comment.save()
         return HttpResponse(status=200)
 
@@ -277,13 +277,13 @@ class InviteCreateView(CustomCreateView):
     fields = None
 
     def get_success_url(self):
-        project_id = self.kwargs['project_pk']
-        return reverse_lazy('project-detail', kwargs={'pk': project_id})
+        project_pk = self.kwargs['project_pk']
+        return reverse_lazy('project-detail', kwargs={'pk': project_pk})
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        project_id = self.kwargs['project_pk']
-        project = Project.objects.get(pk=project_id)
+        project_pk = self.kwargs['project_pk']
+        project = Project.objects.get(pk=project_pk)
         kwargs['permission_group'] = project.permission_group
         return kwargs
 
@@ -344,3 +344,25 @@ class ProfileUpdateView(CustomUpdateView):
 
     def get_success_url(self):
         return reverse_lazy('profile-detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class SprintCreateModalView(CustomCreateView, BSModalCreateView):
+    model = Sprint
+    template_name = 'main/sprint_form_modal.html'
+    form_class = SprintModalForm
+    fields = None
+
+    def form_valid(self, form):
+        if not is_ajax(self.request.META):
+            form.save()
+            return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        project_pk = self.kwargs['project_pk']
+        project = Project.objects.get(pk=project_pk)
+        kwargs['initial']['project'] = project
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('project-detail', kwargs={'pk': self.kwargs['project_pk']})
