@@ -2,10 +2,11 @@ from bootstrap_modal_forms.generic import BSModalCreateView, BSModalDeleteView, 
 from bootstrap_modal_forms.utils import is_ajax
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views import View
+from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView, TemplateView, RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, DeleteViewCustomDeleteWarning
 from rules.contrib.views import AutoPermissionRequiredMixin
@@ -101,6 +102,24 @@ def persistent(request):
         order_issues(sortable_data)
 
     return HttpResponse(status=204)
+
+
+@require_POST
+def move_issue_to_board(request):
+    issue_id = request.POST.get('issueId')
+    board_id = request.POST.get('boardId')
+
+    issue = get_object_or_404(Issue, id=issue_id)
+    board = get_object_or_404(Board, id=board_id)
+
+    todo_column = Column.objects.filter(board=board, name='To Do').first()
+    if todo_column:
+        issue.column = todo_column
+        issue.save()
+
+        return JsonResponse({'message': 'Column ID updated successfully'})
+    else:
+        return JsonResponse({'message': 'Failed to update Column ID'}, status=400)
 
 
 class ProjectPageView(CustomDetailView):

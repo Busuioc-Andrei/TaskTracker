@@ -6,7 +6,7 @@ from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpd
     IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView, \
     IssueCommentDeleteView, CustomizeView, ProjectPageView, InviteCreateView, InvitationRejectView, \
     InvitationAcceptView, RemoveMemberView, ProfileDetailView, ProfileUpdateView, SprintCreateModalView, \
-    SprintCompleteModalView
+    SprintCompleteModalView, move_issue_to_board
 
 generic_models = [Issue, Project, Board, Column, Comment, ColorLabel]
 
@@ -36,6 +36,7 @@ urlpatterns = [
     path('echo/', echo, name='echo'),
     path('empty/', empty, name='empty'),
     path('persistent/', persistent, name='persistent'),
+    path('move-issue-to-board/', move_issue_to_board, name='move-issue-to-board'),
 
     path('customize/', CustomizeView.as_view(), name='customize'),
     path('profile/<uuid:pk>/', ProfileDetailView.as_view(), name='profile-detail'),

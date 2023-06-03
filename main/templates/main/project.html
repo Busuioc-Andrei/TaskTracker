@@ -3,6 +3,7 @@
 
 {% block content %}
     <link href="{% static 'css/profile.css' %}" rel="stylesheet">
+    <script src="{% static 'js/drag_and_drop.js' %}"></script>
     {% include 'modal/modal.html' %}
     <div class="container mb-5">
         <div class="d-flex justify-content-between">
@@ -37,10 +38,10 @@
             </div>
         </div>
 
-        <div class="row row-cols-5 g-3">
+        <div class="row row-cols-5 g-3 mb-2">
             {% for board in project.board_set.all %}
                 <div class="col">
-                    <div class="card hover-effect">
+                    <div class="card hover-effect" data-board-id="{{ board.id }}">
                         <div class="card-body">
                             <h5 class="card-title"> {{ board.name }} </h5>
                             <p class="card-text"> {{ board.description|default:"&nbsp" }} </p>
@@ -49,8 +50,8 @@
                     </div>
                 </div>
             {% endfor %}
-            <p><a class="btn btn-primary" href="{% url 'board-add' %}">Add a new board</a></p>
         </div>
+        <p><a class="btn btn-primary" href="{% url 'board-add' %}">Add a new board</a></p>
     </div>
 
     <div class="container mb-5">
@@ -69,9 +70,9 @@
                 <tbody>
                 {% load custom_tags %}
                 {% for issue in project.issue_set|in_backlog %}
-                    <tr>
+                    <tr class="draggable-row" data-issue-id="{{ issue.id }}">
                         <td>{{ issue.get_issue_type_display }}</td>
-                        <td>{{ issue.name }}</td>
+                        <td class="issue-name">{{ issue.name }}</td>
                         <td>{{ issue.description }}</td>
                         <td>{{ issue.created_by }}</td>
                         <td>
