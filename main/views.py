@@ -14,7 +14,7 @@ from auth.models import User
 from commons.mixins import ModelNameMixin, DatetimePickerMixin, ModelChoiceFilterMixin
 from commons.utils import parse_jquery_sortable, order_columns, order_issues
 from main.forms import ColumnForm, IssueModalForm, IssueForm, IssueModalUpdateForm, CommentForm, InvitationForm, \
-    UserAndProfileForm, SprintModalForm
+    UserAndProfileForm, SprintModalForm, SprintCompleteModalForm
 from main.models import Issue, Board, Column, Comment, Project, Invitation, PermissionGroup, Profile, Sprint
 
 import warnings
@@ -179,7 +179,7 @@ class IssueCommentDeleteView(DeleteModalView):
 
 class ColumnIssueCreateModalView(CustomCreateView, BSModalCreateView):
     model = Issue
-    template_name = 'main/issue_form_modal.html'
+    template_name = 'main/modal/issue_form_modal.html'
     form_class = IssueModalForm
     fields = None  # set to None because a Form Class is used
 
@@ -211,7 +211,7 @@ class IssueUpdateView(CustomUpdateView):
 
 class BoardIssueUpdateModalView(CustomUpdateView, BSModalUpdateView):
     model = Issue
-    template_name = 'main/issue_edit_modal.html'
+    template_name = 'main/modal/issue_edit_modal.html'
     form_class = IssueModalUpdateForm
     fields = None
 
@@ -348,14 +348,19 @@ class ProfileUpdateView(CustomUpdateView):
 
 class SprintCreateModalView(CustomCreateView, BSModalCreateView):
     model = Sprint
-    template_name = 'main/sprint_form_modal.html'
+    template_name = 'main/modal/sprint_form_modal.html'
     form_class = SprintModalForm
     fields = None
 
     def form_valid(self, form):
         if not is_ajax(self.request.META):
-            form.save()
+            sprint = form.save()
+            project = sprint.project
+            project.current_sprint = sprint
+            project.save()
             return super().form_valid(form)
+        else:
+            return HttpResponse(status=200)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -366,3 +371,22 @@ class SprintCreateModalView(CustomCreateView, BSModalCreateView):
 
     def get_success_url(self):
         return reverse_lazy('project-detail', kwargs={'pk': self.kwargs['project_pk']})
+
+
+class SprintCompleteModalView(CustomUpdateView, BSModalUpdateView):
+    model = Sprint
+    template_name = 'main/modal/sprint_complete_modal.html'
+    form_class = SprintCompleteModalForm
+    fields = None
+
+    def form_valid(self, form):
+        if not is_ajax(self.request.META):
+            sprint = form.save()
+            sprint.project.current_sprint = None
+            sprint.project.save()
+            return super().form_valid(form)
+        else:
+            return HttpResponse(status=200)
+
+    def get_success_url(self):
+        return self.request.META['HTTP_REFERER']

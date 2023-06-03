@@ -1,0 +1,21 @@
+<form method="post" action="">
+    {% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% load crispy_forms_filters %}
+    <div class="modal-header">
+        <h5 class="modal-title">Complete {{ model_name }}</h5>
+        <button class="btn close" type="button" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <p>Are you sure you want to complete "{{ object }}"?</p>
+        {{ form|crispy }}
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Complete</button>
+    </div>
+</form>

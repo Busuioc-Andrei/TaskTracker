@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 from itertools import chain
 
 from colorfield.fields import ColorField
@@ -58,6 +59,8 @@ class BaseModel(RulesModel):
 
 
 class Project(BaseModel):
+    current_sprint = models.OneToOneField('Sprint', on_delete=models.SET_NULL, null=True, editable=False, related_name='current_project')
+
     class Meta:
         rules_permissions = {
             "view": rules.is_part_of_permission_group,
@@ -222,13 +225,37 @@ class Invitation(BaseModel):
         return self.accepted is None
 
 
+def get_default_estimated_end_date():
+    return now() + timedelta(days=14)
+
+
 class Sprint(BaseModel):
     start_date = models.DateTimeField(default=now)
     end_date = models.DateTimeField(null=True, blank=True)
     estimated_start_date = models.DateTimeField(default=now)
-    estimated_end_date = models.DateTimeField(null=True, blank=True)
+    estimated_end_date = models.DateTimeField(default=get_default_estimated_end_date)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, editable=False)
     index = models.PositiveIntegerField(default=1, editable=False)
+    description = None
+
+    @property
+    def parent(self) -> Project:
+        return self.project
+
+    @property
+    def is_active(self) -> bool:
+        return self.current_project is not None
+
+    @property
+    def days_left(self):
+        if self.end_date:
+            return 0  # Sprint has already ended
+        current_date = now().date()
+        days_left = (self.estimated_end_date.date() - current_date).days
+        return max(days_left, 0)
+
+    class Meta:
+        rules_permissions = rules.parent_rules_permissions
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

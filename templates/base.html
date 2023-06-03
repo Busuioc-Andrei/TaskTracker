@@ -35,15 +35,15 @@
                             <a class="nav-link" href="{% url 'admin:index'%}">Admin</a>
                         </li>
                         {% if user.is_authenticated %}
-                            {% include 'main/project_nav_dropdown.html' %}
-                            {% include 'main/board_nav_dropdown.html' %}
+                            {% include 'main/dropdown/project_nav_dropdown.html' %}
+                            {% include 'main/dropdown/board_nav_dropdown.html' %}
                         {% endif %}
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         {% if user.is_authenticated %}
                             <li class="nav-item">
-                                {% include 'main/notifications_nav_dropdown.html' %}
-                                {% include 'main/settings_nav_dropdown.html' %}
+                                {% include 'main/dropdown/notifications_nav_dropdown.html' %}
+                                {% include 'main/dropdown/settings_nav_dropdown.html' %}
                                 <a class="nav-link" href="{% url 'logout'%}">Logout</a>
                             </li>
                         {% else %}

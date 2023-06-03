@@ -5,6 +5,7 @@ from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
 from django.forms import ModelForm
+from django.utils.timezone import now
 
 from auth.models import User
 from main.models import Column, Issue, Comment, Invitation, Profile, Sprint
@@ -65,13 +66,6 @@ class IssueForm(ModelForm):
 
 class IssueModalForm(IssueForm, BSModalModelForm):
     pass
-    # def save(self, commit=True):
-    #     instance = super().save(commit=False)
-    #     # instance.index = self.initial['index']
-    #     # instance.project = self.initial['project']
-    #     if commit:
-    #         instance.save()
-    #     return instance
 
 
 class IssueModalUpdateForm(IssueForm, BSModalModelForm):
@@ -176,6 +170,16 @@ class UserAndProfileForm(ModelForm):
         return user
 
 
+class SprintCompleteModalForm(BSModalModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.initial['end_date'] = now
+
+    class Meta:
+        model = Sprint
+        fields = ['end_date']
+
+
 class SprintModalForm(BSModalModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -198,3 +202,4 @@ class SprintModalForm(BSModalModelForm):
     class Meta:
         model = Sprint
         fields = '__all__'
+        exclude = ['end_date']

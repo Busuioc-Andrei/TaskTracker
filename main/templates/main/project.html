@@ -8,14 +8,32 @@
         <div class="d-flex justify-content-between">
             <h2> Boards </h2>
             <div class="row">
-                <div class="col-auto">
-                    <button class="modal-link-m btn btn-primary" type="button" data-form-url="{% url 'sprint-add' project.pk %}">
-                        Create Sprint
-                    </button>
-                </div>
-                <div class="col">
-                    <h2><u> {{ project.name }} </u></h2>
-                </div>
+                {% with sprint=project.current_sprint %}
+                    {% if sprint %}
+                        <div class="col-auto py-2">
+                            {{ sprint.days_left }} days left in sprint
+                        </div>
+                        <div class="col-auto">
+                            <button class="modal-link-m btn btn-primary" type="button"
+                                    data-form-url="{% url 'sprint-complete' sprint.pk %}">
+                                Complete Sprint
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="col-auto">
+                            <button class="modal-link-m btn btn-primary" type="button"
+                                    data-form-url="{% url 'sprint-add' project.pk %}">
+                                Create Sprint
+                            </button>
+                        </div>
+                    {% endif %}
+                    <div class="col">
+                        <h2><u> {{ project.name }} </u></h2>
+                        {% if sprint %}
+                            <h4> {{ sprint.name }} </h4>
+                        {% endif %}
+                    </div>
+                {% endwith %}
             </div>
         </div>
 
