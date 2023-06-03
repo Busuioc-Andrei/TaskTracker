@@ -172,16 +172,19 @@ LOG_DIR = BASE_DIR / 'logs/'
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
+timed_handler = TimedRotatingFileHandler(
+    LOG_DIR / 'logfile.log',
+    when='midnight',
+    interval=1,
+    backupCount=5,
+)
+timed_handler.namer = lambda name: name.replace(".log", "") + ".log"
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
     handlers=[
-        TimedRotatingFileHandler(
-            LOG_DIR / 'logfile.log',
-            when='midnight',
-            interval=1,
-            backupCount=5,
-        ),
+        timed_handler,
         # RotatingFileHandler(
         #     LOG_DIR / 'logfile.log',
         #     maxBytes=5 * 1024 * 1024,  # 1MB
