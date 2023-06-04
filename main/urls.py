@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .models import Issue, BaseModel, Project, Board, Column, Comment, ColorLabel, PermissionGroup
+from .models import Issue, BaseModel, Project, Board, Column, Comment, ColorLabel, PermissionGroup, Sprint
 from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpdateView, DeleteModalView, \
     IndexPageView, BoardPageView, echo, BoardCreateView, ColumnIssueCreateModalView, BoardColumnDeleteView, persistent, \
     IssueCreateView, BoardIssueUpdateModalView, IssueUpdateView, empty, IssueCommentCreateView, BoardIssueDeleteView, \
@@ -8,7 +8,7 @@ from .views import CustomListView, CustomCreateView, CustomDetailView, CustomUpd
     InvitationAcceptView, RemoveMemberView, ProfileDetailView, ProfileUpdateView, SprintCreateModalView, \
     SprintCompleteModalView, move_issue_to_board
 
-generic_models = [Issue, Project, Board, Column, Comment, ColorLabel]
+generic_models = [Issue, Project, Board, Column, Comment, ColorLabel, Sprint]
 
 
 def add_generic_paths(model_types: [type[BaseModel]]):
@@ -45,7 +45,7 @@ urlpatterns = [
 
     path('project/<uuid:pk>/', ProjectPageView.as_view(), name='project-detail'),
     path('project/<uuid:project_pk>/invite/add/', InviteCreateView.as_view(), name='invite-add'),
-    path('project/<uuid:project_pk>/sprint/add/', SprintCreateModalView.as_view(), name='sprint-add'),
+    path('project/<uuid:project_pk>/sprint/add/', SprintCreateModalView.as_view(), name='sprint-start'),
     path('sprint/<uuid:pk>/complete/', SprintCompleteModalView.as_view(), name='sprint-complete'),
 
     path('board/add/', BoardCreateView.as_view(), name='board-add'),

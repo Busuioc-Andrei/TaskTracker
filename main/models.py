@@ -239,7 +239,7 @@ class Sprint(BaseModel):
     estimated_end_date = models.DateTimeField(default=get_default_estimated_end_date)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, editable=False)
     index = models.PositiveIntegerField(default=1, editable=False)
-    description = None
+    description = ''
 
     @property
     def parent(self) -> Project:
