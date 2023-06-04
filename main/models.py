@@ -135,6 +135,7 @@ class Issue(BaseModel):
     end_date = models.DateTimeField(null=True, blank=True)
     order = models.IntegerField(null=True, editable=False)
     in_backlog = models.BooleanField(default=True, editable=False)
+    done = models.BooleanField(default=False, editable=False)
 
     class IssueType(models.TextChoices):
         EPIC = 'epic', _('Epic')
@@ -156,7 +157,9 @@ class Issue(BaseModel):
                 self.color_label = color_label
 
     def save(self, *args, **kwargs):
-        self.in_backlog = not bool(self.column)
+        if self.column and self.column.name == 'Done':
+            self.done = True
+        self.in_backlog = not self.done and not bool(self.column)
         self.add_default_color_label()
         super().save(*args, **kwargs)
 

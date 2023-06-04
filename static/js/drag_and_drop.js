@@ -31,6 +31,8 @@ $(document).ready(function () {
             $(this).removeClass("hovered");
         },
         drop: function (event, ui) {
+            $(this).removeClass("hovered");
+
             var droppedRow = ui.draggable;
             droppedRow.hide();
             var boardId = $(this).data("board-id");

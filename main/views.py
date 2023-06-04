@@ -403,6 +403,9 @@ class SprintCompleteModalView(CustomUpdateView, BSModalUpdateView):
             sprint = form.save()
             sprint.project.current_sprint = None
             sprint.project.save()
+
+            sprint.project.issue_set.update(column_id=None)
+            sprint.project.issue_set.filter(done=False).update(in_backlog=True)
             return super().form_valid(form)
         else:
             return HttpResponse(status=200)
