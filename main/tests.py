@@ -1,3 +1,6 @@
+import warnings
+
+from django.core.exceptions import PermissionDenied
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -8,7 +11,8 @@ from main.models import Issue, Project
 
 class IssueFormTestCase(TestCase):
     def setUp(self) -> None:
-        project = Project.objects.create(name='test_project')
+        user1 = User.objects.create_user(username='user1', password='testpass1', email='user1@example.com')
+        project = Project.objects.create(name='test_project', created_by=user1)
         Issue.objects.create(name='test_task', issue_type='task', project=project)
         Issue.objects.create(name='test_task2', issue_type='task', project=project)
         Issue.objects.create(name='test_task3', issue_type='task', project=project)
