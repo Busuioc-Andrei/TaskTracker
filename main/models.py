@@ -235,7 +235,6 @@ def get_default_estimated_end_date():
 class Sprint(BaseModel):
     start_date = models.DateTimeField(default=now)
     end_date = models.DateTimeField(null=True, blank=True)
-    estimated_start_date = models.DateTimeField(default=now)
     estimated_end_date = models.DateTimeField(default=get_default_estimated_end_date)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, editable=False)
     index = models.PositiveIntegerField(default=1, editable=False)
@@ -252,7 +251,7 @@ class Sprint(BaseModel):
     @property
     def days_left(self):
         if self.end_date:
-            return 0  # Sprint has already ended
+            return 0
         current_date = now().date()
         days_left = (self.estimated_end_date.date() - current_date).days
         return max(days_left, 0)
