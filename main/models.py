@@ -130,6 +130,7 @@ class Issue(BaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, default=first_project)
     column = models.ForeignKey(Column, on_delete=models.SET_NULL, null=True, editable=False)
     parent_issue = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_assigned_to', null=True, blank=True)
     color_label = models.ForeignKey(ColorLabel, on_delete=models.SET_NULL, null=True, blank=True)
     start_date = models.DateTimeField(default=now, null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)

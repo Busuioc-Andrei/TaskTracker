@@ -4,6 +4,9 @@
     {% include 'modal/modal.html' with size="m" z_index="10000" %}
     {% include 'modal/modal.html' with size="xl" %}
     <div class="row sortable-col overflow-row">
+        <div>
+            <h2><u> {{ board.name }} </u></h2>
+        </div>
         {% for column in board.column_set.all %}
             <div id="column_{{ column.id }}" class="sorted-column col-5 mx-3 bg-light-gray bg-gradient rounded-3">
                 <div class="btn-toolbar justify-content-between">

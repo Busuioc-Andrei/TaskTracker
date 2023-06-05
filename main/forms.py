@@ -52,6 +52,12 @@ class IssueForm(ModelForm):
         model = Issue
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        project = self.instance.project if self.instance.pk else None
+        if project and project.permission_group:
+            self.fields['assigned_to'].queryset = project.permission_group.members.all()
+
     def clean(self):
         cleaned_data = super().clean()
         issue_pk = self.instance.pk

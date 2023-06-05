@@ -60,6 +60,10 @@ body {
   font-size: 12px;
 }
 
+.xdsoft_datetimepicker.xdsoft_noselect.xdsoft_{
+    z-index: 99999;
+}
+
 table.dataTable thead .sorting:after,
 table.dataTable thead .sorting:before,
 table.dataTable thead .sorting_asc:after,
