@@ -87,7 +87,7 @@ class IssueFormTestCase(TestCase):
         self.assertFormError(form, 'parent_issue', 'Epics cannot have a parent Issue.')
 
 
-class ProjectVisibilityTestCase(TestCase):  # this test should be modified when implementing project groups
+class ProjectVisibilityTestCase(TestCase):
     def setUp(self) -> None:
         self.user1 = User.objects.create_user(username='user1', password='testpass1')
         self.user2 = User.objects.create_user(username='user2', password='testpass2')

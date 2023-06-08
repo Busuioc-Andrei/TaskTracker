@@ -36,7 +36,7 @@ class PasswordTestCase(TestCase):
 
 class EmailTestCase(TestCase):
 
-    def test_send_test_email(self):
+    def test_send_email(self):
         send_mail(
             'Subject',
             'Body',
