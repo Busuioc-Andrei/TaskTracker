@@ -22,8 +22,8 @@ body {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
-
 }
+
 .overflow-row > .col-5 {
     display: inline-block;
     max-width: 250px;
@@ -62,6 +62,10 @@ body {
 
 .xdsoft_datetimepicker.xdsoft_noselect.xdsoft_{
     z-index: 99999;
+}
+
+.card-text {
+    white-space: normal;
 }
 
 table.dataTable thead .sorting:after,
