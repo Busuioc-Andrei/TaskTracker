@@ -5,8 +5,7 @@ from auth.models import User
 
 
 class NewUserForm(UserCreationForm):
-    # email = forms.EmailField(required=True)
-    email = forms.EmailField(required=False)
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User

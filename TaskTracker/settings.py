@@ -165,6 +165,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tasktracker1@outlook.com'
 EMAIL_HOST_PASSWORD = '1c44a2e7-a9fa-4f6f-9a96-001f62a86805'
 DEFAULT_FROM_EMAIL = 'tasktracker1@outlook.com'
+MAILER_EMPTY_QUEUE_SLEEP = 5
 
 LOGGING_CONFIG = None
 LOG_DIR = BASE_DIR / 'logs/'
